@@ -1,6 +1,41 @@
 library(tidyverse)
 library(readxl)
 library(reshape2)
+library(raster)
+library(stringr)
+
+Data <- read.csv2("A:/GABRIEL/RESULTADOS/RESULTADOS.txt", encoding="UTF-8")
+
+Data$S_NAT3_c_1 <- str_replace(Data$S_NAT3_c_1 , ".*_", "")
+
+unique(Data$S_NAT3_c_1)
+
+Data <- Data[,c(56,29,19,13,61)]
+colnames(Data) <- c("PROVINCIA", "RN2000", "HIC", "RUE", "AREA")
+
+
+unique(kk$variable)
+
+
+"Estado"  13
+"DESIG_ENG" 29
+Texto 56
+S_NAT3_c_1 19
+"AREA_2" 61
+
+unique(Data$RN2000)
+unique(Data$HIC)
+
+kk <- filter(Data, Data$HIC == "Bosques mixtos subatlánticos acidófilos")
+ggplot(kk, aes(x = RUE, y = AREA/1000, fill = RN2000))+
+  geom_boxplot()
+
+
+
+
+
+
+
 RESULTADOS_ALMERIA <- read_excel("A:/GABRIEL/ALMERIA/RESULTADOS_ALMERIA.xlsx")
 6 estado
 58 area
