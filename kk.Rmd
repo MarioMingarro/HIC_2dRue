@@ -1,0 +1,23 @@
+---
+title: "kk"
+author: "Mario"
+date: "16/2/2023"
+output: html_document
+---
+
+```{r echo = FALSE, results = "asis"}
+input <- data.frame(
+  name = LETTERS[1:4],
+  data = runif(n = 4),
+  text = replicate(4, paste(sample(x = LETTERS, size = 100, replace = TRUE), collapse = "")),
+  stringsAsFactors = FALSE)
+
+template <- "## This is section %s
+
+" # dont't forget the newline
+
+for (i in 1:2) {
+  current <- input[i, ]
+  cat(sprintf(template, current$name))
+}
+```

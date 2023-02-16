@@ -1,0 +1,102 @@
+---
+output:
+  html_document:
+    toc: true             # Crea tabla de contenido
+    toc_depth: 2          # Niveles de la tabla
+    number_sections: true # Enumera las secciones
+    theme: cerulean
+    toc_float:            # Tabla de contenido flotante siempre visible
+      collapsed: true    # Aparecen solo con los encabezados de nivel superior
+      smooth_scroll: true # Desplazamientos "animados" en vez de directos
+---
+  
+<img src="C:/GITHUB_REP/HIC_2dRue/Leyenda.jpeg" width="400px">  
+  
+```{r, message = FALSE, warning = FALSE, echo = FALSE}
+library(tidyverse)
+library(stringr)
+
+Data <- read.csv2("A:/GABRIEL/RESULTADOS/RESULTADOS_AN.txt", encoding="UTF-8")
+
+Data$S_NAT3_c_1 <- str_replace(Data$S_NAT3_c_1 , ".*_", "")
+
+# "Texto" 4 PROVINCIA
+# "FIGURA" 13 FIGURA
+# "NOMBRE" 14 Nombre PA
+# "S_NAT3_c_1" 34 HIC
+# "Estado"  28 RUE
+# "AREA" 37 area
+
+Data <- Data[,c(4,13,14,34,28,40)]
+colnames(Data) <- c("PROVINCIA", "FIGURA", "NOMBRE", "HIC", "RUE", "AREA_m")
+Data$AREA_km <- cbind(Data$AREA/1000000)
+```
+# Almería  
+
+```{r,message=FALSE, warning=FALSE, echo=FALSE, results = "asis"}
+Filtrado <- filter(Data, Data$PROVINCIA == "Almería")
+
+HIC <- unique(Filtrado$HIC)
+RUE <- unique(Filtrado$RUE)
+
+
+
+for (i in 1:3){
+  sel <- dplyr::filter(Filtrado, Filtrado$HIC == HIC[i])
+  cat(paste0("\n\n## ", HIC[i], "\n"))
+  for (j in 1:2){
+    aa <- dplyr::filter(sel, sel$RUE == RUE[j])
+    print(ggplot(aa, aes(x = RUE, y = AREA_km, fill = FIGURA)) +
+            geom_boxplot(
+              outlier.shape = NA,
+              alpha = .5,
+              width = 1,
+              colour = "black") +
+            xlab(paste0(unique(aa$RUE))) + 
+            ylab("Area (km2)")+
+            theme(
+              legend.position = "none",
+              axis.text.x = element_blank(),
+              axis.ticks.x = element_blank(),
+              axis.ticks.y = element_blank()
+            )
+    )
+  }
+}
+
+```
+  
+# Cádiz 
+
+```{r,message=FALSE, warning=FALSE, echo=FALSE, results = "asis"}
+Filtrado <- filter(Data, Data$PROVINCIA == "Cádiz")
+
+HIC <- unique(Filtrado$HIC)
+RUE <- unique(Filtrado$RUE)
+
+
+
+for (i in 1:3){
+  sel <- dplyr::filter(Filtrado, Filtrado$HIC == HIC[i])
+  cat(paste0("\n\n## ", HIC[i], "\n"))
+  for (j in 1:2){
+    aa <- dplyr::filter(sel, sel$RUE == RUE[j])
+    print(ggplot(aa, aes(x = RUE, y = AREA_km, fill = FIGURA)) +
+            geom_boxplot(
+              outlier.shape = NA,
+              alpha = .5,
+              width = 1,
+              colour = "black") +
+            xlab(paste0(unique(aa$RUE))) + 
+            ylab("Area (km2)")+
+            theme(
+              legend.position = "none",
+              axis.text.x = element_blank(),
+              axis.ticks.x = element_blank(),
+              axis.ticks.y = element_blank()
+            )
+    )
+  }
+}
+
+```
