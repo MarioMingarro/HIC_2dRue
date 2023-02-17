@@ -15,6 +15,7 @@ output:
 ```{r, message = FALSE, warning = FALSE, echo = FALSE}
 library(tidyverse)
 library(stringr)
+library(plotly)
 
 Data <- read.csv2("A:/GABRIEL/RESULTADOS/RESULTADOS_AN.txt", encoding="UTF-8")
 
@@ -31,6 +32,40 @@ Data <- Data[,c(4,13,14,34,28,40)]
 colnames(Data) <- c("PROVINCIA", "FIGURA", "NOMBRE", "HIC", "RUE", "AREA_m")
 Data$AREA_km <- cbind(Data$AREA/1000000)
 ```
+
+
+# Andalucía  
+
+
+```{r,message=FALSE, warning=FALSE, echo=FALSE, results = "asis"}
+HIC <- unique(Data$HIC)
+RUE <- unique(Data$RUE)
+for (i in 1:2){
+  sel <- dplyr::filter(Data, Data$HIC == HIC[i])
+  cat(paste0("\n\n## ", HIC[i], "\n"))
+  for (j in 1:2){
+    aa <- dplyr::filter(sel, sel$RUE == RUE[j])
+    print(ggplot(aa, aes(x = RUE, y = AREA_km, fill = FIGURA)) +
+            geom_boxplot(
+              outlier.shape = 1,
+              outlier.alpha = .2,
+              outlier.color = "red",
+              varwidth = T,
+              alpha = .2,
+              width = 1,
+              colour = "black") +
+            xlab(paste0(unique(aa$RUE))) + 
+            ylab(bquote("Area " (km^2)))+
+            theme(
+              legend.position = "none",
+              axis.text.x = element_blank(),
+              axis.ticks.x = element_blank(),
+              axis.ticks.y = element_blank()
+            ))
+  }
+}
+```
+  
 # Almería  
 
 ```{r,message=FALSE, warning=FALSE, echo=FALSE, results = "asis"}
@@ -53,42 +88,7 @@ for (i in 1:3){
               width = 1,
               colour = "black") +
             xlab(paste0(unique(aa$RUE))) + 
-            ylab("Area (km2)")+
-            theme(
-              legend.position = "none",
-              axis.text.x = element_blank(),
-              axis.ticks.x = element_blank(),
-              axis.ticks.y = element_blank()
-            )
-    )
-  }
-}
-
-```
-  
-# Cádiz 
-
-```{r,message=FALSE, warning=FALSE, echo=FALSE, results = "asis"}
-Filtrado <- filter(Data, Data$PROVINCIA == "Cádiz")
-
-HIC <- unique(Filtrado$HIC)
-RUE <- unique(Filtrado$RUE)
-
-
-
-for (i in 1:3){
-  sel <- dplyr::filter(Filtrado, Filtrado$HIC == HIC[i])
-  cat(paste0("\n\n## ", HIC[i], "\n"))
-  for (j in 1:2){
-    aa <- dplyr::filter(sel, sel$RUE == RUE[j])
-    print(ggplot(aa, aes(x = RUE, y = AREA_km, fill = FIGURA)) +
-            geom_boxplot(
-              outlier.shape = NA,
-              alpha = .5,
-              width = 1,
-              colour = "black") +
-            xlab(paste0(unique(aa$RUE))) + 
-            ylab("Area (km2)")+
+            ylab(bquote("Area " (km^2)))+
             theme(
               legend.position = "none",
               axis.text.x = element_blank(),
