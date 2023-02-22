@@ -4,18 +4,57 @@ output:
     toc: true             # Crea tabla de contenido
     toc_depth: 2          # Niveles de la tabla
     number_sections: true # Enumera las secciones
-    theme: cerulean
+    theme: cosmo
     toc_float:            # Tabla de contenido flotante siempre visible
       collapsed: true    # Aparecen solo con los encabezados de nivel superior
       smooth_scroll: true # Desplazamientos "animados" en vez de directos
 ---
-  
-<img src="C:/GITHUB_REP/HIC_2dRue/Leyenda.jpeg" width="400px">  
-  
-```{r, message = FALSE, warning = FALSE, echo = FALSE}
+
+**Hábitats de Interés Comunitario Utilizados**
+
+1.  Encinares o carrascales de Q. ilex subsp. ballota
+2.  Bosque meso(supra)mediterráneo mediterráneo basófilo de coníferas (pinos, sabinas y enebros) y encinas
+3.  Bosques mixtos de desfiladeros y laderas abruptas
+4.  Bosques submediterráneos basófilos de pinos, quejigos, encina y sabina albar
+5.  Bosques supramediterráneos basófilos dominados por pinos mediterráneos de las montañas surorientales ibéricas
+6.  Pinares de pino carrasco (P. halepensis) y garrigas termófilas
+7.  Maquias con acebuches y algarrobos
+8.  Bosques mixtos subatlánticos acidófilos
+9.  Quejigares de Q. faginea, Q. humilis, Q. canariensis y sus híbridos
+10. Pinares de pino negral o resinero (P. pinaster) sobre rodenales, arenales continentales y calcoarenitas dolomíticas
+11. Alcornocales (Q. suber)
+12. Bosque termófilo de alcornoque (Q. suber) y quejigo moruno (Q. canariensis). Relicto en Cádiz, Málaga y Gerona.
+13. Bosque termófilo de acebuches (Olea europea var. sylvestris) y alcornoques (Q. suber).
+14. Relicto de Cádiz y Málaga.
+15. Pinares de pino piñonero (P. pinea) sobre batolitos graníticos, arenales interiores y dunas litorales
+16. Bosque esclerófilo-subesclerófilo acidófilo, supra(meso)mediterráneo, principalmente de las montañas luso-extremadurenses
+17. Bosque meso(supra)mediterráneo acidófilo de encinas (Q. ilex subsp. ballota) y enebros (Juniperus oxycedrus) y pinos (P. pinaster y P. pinea)
+18. Pinares de pino salgareño o laricio (P. nigra subsp. salzmannii) supramediterráneos orófilos
+19. Melojares, robledales o rebollares de Q. pyrenaica Castañares (Castanea sativa) seminaturales eurosiberianos o submediterráneos (sotos)
+20. Bosque mixto termo-mesomediterráneo con pino carrasco y especies de la maquia mediterránea
+21. Pinsapares béticos
+
+**Código RUE**
+
+1.  Degradado
+2.  Productivo de baja biomasa
+3.  Basal
+4.  Submaduro
+5.  Maduro
+6.  Productivo de alta biomasa
+7.  De referencia
+8.  Muy degradado
+9.  Anomalías de bajo rendimiento
+10. Anomalías de alto rendimiento
+
+```{r, message = FALSE, warning = FALSE, echo = FALSE,  results = "hide"}
 library(tidyverse)
 library(stringr)
-library(plotly)
+library(ggstatsplot)
+library(extrafont)
+
+font_import()
+loadfonts(device = "win")
 
 Data <- read.csv2("A:/GABRIEL/RESULTADOS/RESULTADOS_AN.txt", encoding="UTF-8")
 
@@ -30,43 +69,89 @@ Data$S_NAT3_c_1 <- str_replace(Data$S_NAT3_c_1 , ".*_", "")
 
 Data <- Data[,c(4,13,14,34,28,40)]
 colnames(Data) <- c("PROVINCIA", "FIGURA", "NOMBRE", "HIC", "RUE", "AREA_m")
+Data$FIGURA <- replace(Data$FIGURA, Data$FIGURA == "LIC", "RN2000")
+Data$FIGURA <- replace(Data$FIGURA, Data$FIGURA == "ZEPA", "RN2000")
 Data$AREA_km <- cbind(Data$AREA/1000000)
+
+Data$RUE_CODE <- Data$RUE
+Data$RUE_CODE <- replace(Data$RUE_CODE, Data$RUE_CODE == "Degradado", "1")
+Data$RUE_CODE <- replace(Data$RUE_CODE, Data$RUE_CODE == "Productivo de baja biomasa", "2")
+Data$RUE_CODE <- replace(Data$RUE_CODE, Data$RUE_CODE == "Basal"  , "3")
+Data$RUE_CODE <- replace(Data$RUE_CODE, Data$RUE_CODE == "Submaduro", "4")
+Data$RUE_CODE <- replace(Data$RUE_CODE, Data$RUE_CODE == "Maduro", "5")
+Data$RUE_CODE <- replace(Data$RUE_CODE, Data$RUE_CODE == "Productivo de alta biomasa", "6")
+Data$RUE_CODE <- replace(Data$RUE_CODE, Data$RUE_CODE == "De referencia", "7")
+Data$RUE_CODE <- replace(Data$RUE_CODE, Data$RUE_CODE == "Muy degradado", "8")
+Data$RUE_CODE <- replace(Data$RUE_CODE, Data$RUE_CODE == "Anomaias de bajo rendimiento", "9")
+Data$RUE_CODE <- replace(Data$RUE_CODE, Data$RUE_CODE == "Anomalias de alto rendimiento", "10")
+
 ```
 
+# Todos los datos
 
-# Andalucía  
-
+En el primer análisis visual se incluyen todos los estados de la tierra juntos.
 
 ```{r,message=FALSE, warning=FALSE, echo=FALSE, results = "asis"}
 HIC <- unique(Data$HIC)
 RUE <- unique(Data$RUE)
-for (i in 1:2){
+
+for (i in 1:length(HIC)){
+  sel <- dplyr::filter(Data, Data$HIC == HIC[i])
+  sel$RUE_CODE <- factor(sel$RUE_CODE , level = c(1,2,3,4,5,6,7,8,9,10))
+  cat(paste0("\n\n## ", HIC[i], "\n"))
+  print(ggplot(sel, aes(x = RUE_CODE, y = AREA_km, fill = FIGURA)) +
+  geom_boxplot(width = 1,
+               alpha = 0.4,
+               outlier.colour = "grey50",
+               outlier.alpha = 0.1) + 
+    labs(y = bquote("Area " (km^2),),
+         x= "Código RUE")+
+  scale_fill_manual(values=c("darksalmon", "darkseagreen"))+
+  theme(
+        panel.background = element_rect(fill = "white", colour = "grey50"),
+        axis.title = element_text(size = 12, family="Comic Sans MS")
+        )
+  )
+}
+```
+
+# Andalucía
+
+Para identificar si existen diferencias entre los estados de la tierra, según el hábitat y el estado de inclusión en la Red Natura 2000 (RN2000), se ha realizado una comparación de grupos basado en el test de wilcoxon.
+
+```{r,message=FALSE, warning=FALSE, echo=FALSE, results = "asis"}
+HIC <- unique(Data$HIC)
+RUE <- unique(Data$RUE)
+for (i in 1:length(HIC)){
   sel <- dplyr::filter(Data, Data$HIC == HIC[i])
   cat(paste0("\n\n## ", HIC[i], "\n"))
-  for (j in 1:2){
+  for (j in 1:length(RUE)){
     aa <- dplyr::filter(sel, sel$RUE == RUE[j])
-    print(ggplot(aa, aes(x = RUE, y = AREA_km, fill = FIGURA)) +
-            geom_boxplot(
-              outlier.shape = 1,
-              outlier.alpha = .2,
-              outlier.color = "red",
-              varwidth = T,
-              alpha = .2,
-              width = 1,
-              colour = "black") +
-            xlab(paste0(unique(aa$RUE))) + 
-            ylab(bquote("Area " (km^2)))+
-            theme(
-              legend.position = "none",
-              axis.text.x = element_blank(),
-              axis.ticks.x = element_blank(),
-              axis.ticks.y = element_blank()
-            ))
+    print(ggbetweenstats(aa, 
+                         FIGURA, AREA_km, 
+                         bf.message = FALSE,
+                         plot.type = "boxviolin", 
+                         type = "nonparametric",
+                         xlab = "Figura",
+                         ylab = bquote("Area " (km^2)),
+                         title = paste0(RUE[j]),
+                         outlier.color = "grey50",
+                         point.args = list(position = ggplot2::position_jitterdodge(dodge.width = 0.6), alpha =
+                                             0.2, size = 3, stroke = 0, na.rm = TRUE),
+                         ggtheme = ggplot2::theme_gray(), 
+                         package = "yarrr", 
+                         palette = "bugs")+
+            ggplot2::theme(legend.position = "none",
+                           panel.background = element_rect(fill = "white", colour = "grey50"),
+                           axis.title = element_text(size = 12, family="Comic Sans MS"))
+                           )
   }
 }
 ```
-  
-# Almería  
+
+# Provincias
+
+# Almería
 
 ```{r,message=FALSE, warning=FALSE, echo=FALSE, results = "asis"}
 Filtrado <- filter(Data, Data$PROVINCIA == "Almería")
@@ -74,28 +159,281 @@ Filtrado <- filter(Data, Data$PROVINCIA == "Almería")
 HIC <- unique(Filtrado$HIC)
 RUE <- unique(Filtrado$RUE)
 
-
-
-for (i in 1:3){
+for (i in c(1,2,3,4,5,6,7,9,10,11)){
   sel <- dplyr::filter(Filtrado, Filtrado$HIC == HIC[i])
   cat(paste0("\n\n## ", HIC[i], "\n"))
-  for (j in 1:2){
+  for (j in 1:length(RUE)){
     aa <- dplyr::filter(sel, sel$RUE == RUE[j])
-    print(ggplot(aa, aes(x = RUE, y = AREA_km, fill = FIGURA)) +
-            geom_boxplot(
-              outlier.shape = NA,
-              alpha = .5,
-              width = 1,
-              colour = "black") +
-            xlab(paste0(unique(aa$RUE))) + 
-            ylab(bquote("Area " (km^2)))+
-            theme(
-              legend.position = "none",
-              axis.text.x = element_blank(),
-              axis.ticks.x = element_blank(),
-              axis.ticks.y = element_blank()
-            )
-    )
+    print(ggbetweenstats(aa, 
+                         FIGURA, AREA_km, 
+                         bf.message = FALSE,
+                         plot.type = "boxviolin", 
+                         type = "nonparametric",
+                         xlab = "Figura",
+                         ylab = bquote("Area " (km^2)),
+                         title = paste0(RUE[j]),
+                         outlier.color = "grey50",
+                         point.args = list(position = ggplot2::position_jitterdodge(dodge.width = 0.6), alpha =
+                                             0.2, size = 3, stroke = 0, na.rm = TRUE),
+                         ggtheme = ggplot2::theme_gray(), 
+                         package = "yarrr", 
+                         palette = "bugs")+
+            ggplot2::theme(legend.position = "none",
+                           panel.background = element_rect(fill = "white", colour = "grey50"),
+                           axis.title = element_text(size = 12, family="Comic Sans MS"))
+                           )
+  }
+}
+
+```
+
+# Cádiz
+
+```{r,message=FALSE, warning=FALSE, echo=FALSE, results = "asis"}
+Filtrado <- filter(Data, Data$PROVINCIA == "Cádiz")
+
+HIC <- unique(Filtrado$HIC)
+RUE <- unique(Filtrado$RUE)
+
+for (i in 1:length(HIC)){
+  sel <- dplyr::filter(Filtrado, Filtrado$HIC == HIC[i])
+  cat(paste0("\n\n## ", HIC[i], "\n"))
+  for (j in 1:length(RUE)){
+    aa <- dplyr::filter(sel, sel$RUE == RUE[j])
+    print(ggbetweenstats(aa, 
+                         FIGURA, AREA_km, 
+                         bf.message = FALSE,
+                         plot.type = "boxviolin", 
+                         type = "nonparametric",
+                         xlab = "Figura",
+                         ylab = bquote("Area " (km^2)),
+                         title = paste0(RUE[j]),
+                         outlier.color = "grey50",
+                         point.args = list(position = ggplot2::position_jitterdodge(dodge.width = 0.6), alpha =
+                                             0.2, size = 3, stroke = 0, na.rm = TRUE),
+                         ggtheme = ggplot2::theme_gray(), 
+                         package = "yarrr", 
+                         palette = "bugs")+
+            ggplot2::theme(legend.position = "none",
+                           panel.background = element_rect(fill = "white", colour = "grey50"),
+                           axis.title = element_text(size = 12, family="Comic Sans MS"))
+                           )
+  }
+}
+
+```
+
+# Córdoba
+
+```{r,message=FALSE, warning=FALSE, echo=FALSE, results = "asis"}
+Filtrado <- filter(Data, Data$PROVINCIA == "Córdoba")
+
+HIC <- unique(Filtrado$HIC)
+RUE <- unique(Filtrado$RUE)
+
+for (i in 1:length(HIC)){
+  sel <- dplyr::filter(Filtrado, Filtrado$HIC == HIC[i])
+  cat(paste0("\n\n## ", HIC[i], "\n"))
+  for (j in 1:length(RUE)){
+    aa <- dplyr::filter(sel, sel$RUE == RUE[j])
+    print(ggbetweenstats(aa, 
+                         FIGURA, AREA_km, 
+                         bf.message = FALSE,
+                         plot.type = "boxviolin", 
+                         type = "nonparametric",
+                         xlab = "Figura",
+                         ylab = bquote("Area " (km^2)),
+                         title = paste0(RUE[j]),
+                         outlier.color = "grey50",
+                         point.args = list(position = ggplot2::position_jitterdodge(dodge.width = 0.6), alpha =
+                                             0.2, size = 3, stroke = 0, na.rm = TRUE),
+                         ggtheme = ggplot2::theme_gray(), 
+                         package = "yarrr", 
+                         palette = "bugs")+
+            ggplot2::theme(legend.position = "none",
+                           panel.background = element_rect(fill = "white", colour = "grey50"),
+                           axis.title = element_text(size = 12, family="Comic Sans MS"))
+                           )
+  }
+}
+
+```
+
+# Granada
+
+```{r,message=FALSE, warning=FALSE, echo=FALSE, results = "asis"}
+Filtrado <- filter(Data, Data$PROVINCIA == "Granada")
+
+HIC <- unique(Filtrado$HIC)
+RUE <- unique(Filtrado$RUE)
+
+for (i in 1:length(HIC)){
+  sel <- dplyr::filter(Filtrado, Filtrado$HIC == HIC[i])
+  cat(paste0("\n\n## ", HIC[i], "\n"))
+  for (j in 1:length(RUE)){
+    aa <- dplyr::filter(sel, sel$RUE == RUE[j])
+    print(ggbetweenstats(aa, 
+                         FIGURA, AREA_km, 
+                         bf.message = FALSE,
+                         plot.type = "boxviolin", 
+                         type = "nonparametric",
+                         xlab = "Figura",
+                         ylab = bquote("Area " (km^2)),
+                         title = paste0(RUE[j]),
+                         outlier.color = "grey50",
+                         point.args = list(position = ggplot2::position_jitterdodge(dodge.width = 0.6), alpha =
+                                             0.2, size = 3, stroke = 0, na.rm = TRUE),
+                         ggtheme = ggplot2::theme_gray(), 
+                         package = "yarrr", 
+                         palette = "bugs")+
+            ggplot2::theme(legend.position = "none",
+                           panel.background = element_rect(fill = "white", colour = "grey50"),
+                           axis.title = element_text(size = 12, family="Comic Sans MS"))
+                           )
+  }
+}
+
+```
+
+# Huelva
+
+```{r,message=FALSE, warning=FALSE, echo=FALSE, results = "asis"}
+Filtrado <- filter(Data, Data$PROVINCIA == "Huelva")
+
+HIC <- unique(Filtrado$HIC)
+RUE <- unique(Filtrado$RUE)
+
+for (i in 1:length(HIC)){
+  sel <- dplyr::filter(Filtrado, Filtrado$HIC == HIC[i])
+  cat(paste0("\n\n## ", HIC[i], "\n"))
+  for (j in 1:length(RUE)){
+    aa <- dplyr::filter(sel, sel$RUE == RUE[j])
+    print(ggbetweenstats(aa, 
+                         FIGURA, AREA_km, 
+                         bf.message = FALSE,
+                         plot.type = "boxviolin", 
+                         type = "nonparametric",
+                         xlab = "Figura",
+                         ylab = bquote("Area " (km^2)),
+                         title = paste0(RUE[j]),
+                         outlier.color = "grey50",
+                         point.args = list(position = ggplot2::position_jitterdodge(dodge.width = 0.6), alpha =
+                                             0.2, size = 3, stroke = 0, na.rm = TRUE),
+                         ggtheme = ggplot2::theme_gray(), 
+                         package = "yarrr", 
+                         palette = "bugs")+
+            ggplot2::theme(legend.position = "none",
+                           panel.background = element_rect(fill = "white", colour = "grey50"),
+                           axis.title = element_text(size = 12, family="Comic Sans MS"))
+                           )
+  }
+}
+
+```
+
+# Jaén
+
+```{r,message=FALSE, warning=FALSE, echo=FALSE, results = "asis"}
+Filtrado <- filter(Data, Data$PROVINCIA == "Jaén")
+
+HIC <- unique(Filtrado$HIC)
+RUE <- unique(Filtrado$RUE)
+
+for (i in 1:length(HIC)){
+  sel <- dplyr::filter(Filtrado, Filtrado$HIC == HIC[i])
+  cat(paste0("\n\n## ", HIC[i], "\n"))
+  for (j in 1:length(RUE)){
+    aa <- dplyr::filter(sel, sel$RUE == RUE[j])
+    print(ggbetweenstats(aa, 
+                         FIGURA, AREA_km, 
+                         bf.message = FALSE,
+                         plot.type = "boxviolin", 
+                         type = "nonparametric",
+                         xlab = "Figura",
+                         ylab = bquote("Area " (km^2)),
+                         title = paste0(RUE[j]),
+                         outlier.color = "grey50",
+                         point.args = list(position = ggplot2::position_jitterdodge(dodge.width = 0.6), alpha =
+                                             0.2, size = 3, stroke = 0, na.rm = TRUE),
+                         ggtheme = ggplot2::theme_gray(), 
+                         package = "yarrr", 
+                         palette = "bugs")+
+            ggplot2::theme(legend.position = "none",
+                           panel.background = element_rect(fill = "white", colour = "grey50"),
+                           axis.title = element_text(size = 12, family="Comic Sans MS"))
+                           )
+  }
+}
+
+```
+
+# Málaga
+
+```{r,message=FALSE, warning=FALSE, echo=FALSE, results = "asis"}
+Filtrado <- filter(Data, Data$PROVINCIA == "Málaga")
+
+HIC <- unique(Filtrado$HIC)
+RUE <- unique(Filtrado$RUE)
+
+for (i in 1:length(HIC)){
+  sel <- dplyr::filter(Filtrado, Filtrado$HIC == HIC[i])
+  cat(paste0("\n\n## ", HIC[i], "\n"))
+  for (j in 1:length(RUE)){
+    aa <- dplyr::filter(sel, sel$RUE == RUE[j])
+    print(ggbetweenstats(aa, 
+                         FIGURA, AREA_km, 
+                         bf.message = FALSE,
+                         plot.type = "boxviolin", 
+                         type = "nonparametric",
+                         xlab = "Figura",
+                         ylab = bquote("Area " (km^2)),
+                         title = paste0(RUE[j]),
+                         outlier.color = "grey50",
+                         point.args = list(position = ggplot2::position_jitterdodge(dodge.width = 0.6), alpha =
+                                             0.2, size = 3, stroke = 0, na.rm = TRUE),
+                         ggtheme = ggplot2::theme_gray(), 
+                         package = "yarrr", 
+                         palette = "bugs")+
+            ggplot2::theme(legend.position = "none",
+                           panel.background = element_rect(fill = "white", colour = "grey50"),
+                           axis.title = element_text(size = 12, family="Comic Sans MS"))
+                           )
+  }
+}
+
+```
+
+# Sevilla
+
+```{r,message=FALSE, warning=FALSE, echo=FALSE, results = "asis"}
+Filtrado <- filter(Data, Data$PROVINCIA == "Sevilla")
+
+HIC <- unique(Filtrado$HIC)
+RUE <- unique(Filtrado$RUE)
+
+for (i in 1:length(HIC)){
+  sel <- dplyr::filter(Filtrado, Filtrado$HIC == HIC[i])
+  cat(paste0("\n\n## ", HIC[i], "\n"))
+  for (j in 1:length(RUE)){
+    aa <- dplyr::filter(sel, sel$RUE == RUE[j])
+    print(ggbetweenstats(aa, 
+                         FIGURA, AREA_km, 
+                         bf.message = FALSE,
+                         plot.type = "boxviolin", 
+                         type = "nonparametric",
+                         xlab = "Figura",
+                         ylab = bquote("Area " (km^2)),
+                         title = paste0(RUE[j]),
+                         outlier.color = "grey50",
+                         point.args = list(position = ggplot2::position_jitterdodge(dodge.width = 0.6), alpha =
+                                             0.2, size = 3, stroke = 0, na.rm = TRUE),
+                         ggtheme = ggplot2::theme_gray(), 
+                         package = "yarrr", 
+                         palette = "bugs")+
+            ggplot2::theme(legend.position = "none",
+                           panel.background = element_rect(fill = "white", colour = "grey50"),
+                           axis.title = element_text(size = 12, family="Comic Sans MS"))
+                           )
   }
 }
 
