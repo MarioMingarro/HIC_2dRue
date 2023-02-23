@@ -9,6 +9,7 @@ output:
       collapsed: true    # Aparecen solo con los encabezados de nivel superior
       smooth_scroll: true # Desplazamientos "animados" en vez de directos
 ---
+# Códigos  
 
 **Hábitats de Interés Comunitario Utilizados**
 
@@ -52,6 +53,9 @@ library(tidyverse)
 library(stringr)
 library(ggstatsplot)
 library(extrafont)
+library(knitr)
+library(kableExtra)
+library(DT)
 
 font_import()
 loadfonts(device = "win")
@@ -87,7 +91,7 @@ Data$RUE_CODE <- replace(Data$RUE_CODE, Data$RUE_CODE == "Anomalias de alto rend
 
 ```
 
-# Todos los datos
+# Andalucía
 
 En el primer análisis visual se incluyen todos los estados de la tierra juntos.
 
@@ -95,7 +99,7 @@ En el primer análisis visual se incluyen todos los estados de la tierra juntos.
 HIC <- unique(Data$HIC)
 RUE <- unique(Data$RUE)
 
-for (i in 1:length(HIC)){
+for (i in c(1,2,3,4,5,6,7,9,10,11,12,13,14,15,16,17,18,19,20,21)){
   sel <- dplyr::filter(Data, Data$HIC == HIC[i])
   sel$RUE_CODE <- factor(sel$RUE_CODE , level = c(1,2,3,4,5,6,7,8,9,10))
   cat(paste0("\n\n## ", HIC[i], "\n"))
@@ -116,10 +120,56 @@ for (i in 1:length(HIC)){
 
 ```
 
-# Andalucía
 
+# Tabla
 Para identificar si existen diferencias entre los estados de la tierra, según el hábitat y el estado de inclusión en la Red Natura 2000 (RN2000), se ha realizado una comparación de grupos basado en el test de wilcoxon.
+```{r,message=FALSE, warning=FALSE, echo=FALSE, results = "asis"}
 
+HIC <- unique(Data$HIC)
+RUE <- unique(Data$RUE)
+
+Tabla <- data.frame(HIC= character(),
+                    RUE = character(),
+                    p = numeric())
+
+for (i in c(1,2,3,4,5,6,7,9,10,11,12,13,14,15,16,17,18,19,20,21)){
+  sel <- dplyr::filter(Data, Data$HIC == HIC[i])
+  Tabla_1 <- data.frame(HIC= character(),
+                      RUE = character(),
+                      p = numeric())
+  
+  for (j in 1:length(RUE)){
+    aa <- dplyr::filter(sel, sel$RUE == RUE[j])
+    WT <- wilcox.test(AREA_km ~ FIGURA, data = aa,
+                exact = FALSE)
+    
+    Tabla_2 <- data.frame(HIC = "A",
+                          RUE = "A",
+                          p = 2)
+    Tabla_2[1,1] <- HIC[i]
+    Tabla_2[1,2] <- RUE[j]
+    Tabla_2[1,3] <- WT$p.value
+    Tabla_1 <- rbind(Tabla_1, Tabla_2)
+    
+  }
+  Tabla <- rbind(Tabla, Tabla_1)
+}
+Tabla$p <-round(Tabla$p, 4)
+
+DT::datatable(Tabla,
+              class = "nowrap",
+              options = list(autoWidth = TRUE,
+                             columnDefs = list(list(
+                               width = "50%",
+                               targets = 0)))) %>% 
+  formatStyle(
+  'p',
+  backgroundColor = styleInterval(c(-1, 0.05), c('red', 'red', "white"))
+)
+
+```
+  
+# Gráficos
 ```{r,message=FALSE, warning=FALSE, echo=FALSE, results = "asis"}
 HIC <- unique(Data$HIC)
 RUE <- unique(Data$RUE)
@@ -148,294 +198,4 @@ for (i in 1:length(HIC)){
                            )
   }
 }
-```
-
-# Provincias
-
-# Almería
-
-```{r,message=FALSE, warning=FALSE, echo=FALSE, results = "asis"}
-Filtrado <- filter(Data, Data$PROVINCIA == "Almería")
-
-HIC <- unique(Filtrado$HIC)
-RUE <- unique(Filtrado$RUE)
-
-for (i in c(1,2,3,4,5,6,7,9,10,11)){
-  sel <- dplyr::filter(Filtrado, Filtrado$HIC == HIC[i])
-  cat(paste0("\n\n## ", HIC[i], "\n"))
-  for (j in 1:length(RUE)){
-    aa <- dplyr::filter(sel, sel$RUE == RUE[j])
-    print(ggbetweenstats(aa, 
-                         FIGURA, AREA_km, 
-                         bf.message = FALSE,
-                         plot.type = "boxviolin", 
-                         type = "nonparametric",
-                         xlab = "Figura",
-                         ylab = bquote("Area " (km^2)),
-                         title = paste0(RUE[j]),
-                         outlier.color = "grey50",
-                         point.args = list(position = ggplot2::position_jitterdodge(dodge.width = 0.6), alpha =
-                                             0.2, size = 3, stroke = 0, na.rm = TRUE),
-                         ggtheme = ggplot2::theme_gray(), 
-                         package = "yarrr", 
-                         palette = "bugs")+
-            ggplot2::theme(legend.position = "none",
-                           panel.background = element_rect(fill = "white", colour = "grey50"),
-                           axis.title = element_text(size = 12, family="Comic Sans MS"))
-                           )
-  }
-}
-
-```
-
-# Cádiz
-
-```{r,message=FALSE, warning=FALSE, echo=FALSE, results = "asis"}
-Filtrado <- filter(Data, Data$PROVINCIA == "Cádiz")
-
-HIC <- unique(Filtrado$HIC)
-RUE <- unique(Filtrado$RUE)
-
-for (i in 1:length(HIC)){
-  sel <- dplyr::filter(Filtrado, Filtrado$HIC == HIC[i])
-  cat(paste0("\n\n## ", HIC[i], "\n"))
-  for (j in 1:length(RUE)){
-    aa <- dplyr::filter(sel, sel$RUE == RUE[j])
-    print(ggbetweenstats(aa, 
-                         FIGURA, AREA_km, 
-                         bf.message = FALSE,
-                         plot.type = "boxviolin", 
-                         type = "nonparametric",
-                         xlab = "Figura",
-                         ylab = bquote("Area " (km^2)),
-                         title = paste0(RUE[j]),
-                         outlier.color = "grey50",
-                         point.args = list(position = ggplot2::position_jitterdodge(dodge.width = 0.6), alpha =
-                                             0.2, size = 3, stroke = 0, na.rm = TRUE),
-                         ggtheme = ggplot2::theme_gray(), 
-                         package = "yarrr", 
-                         palette = "bugs")+
-            ggplot2::theme(legend.position = "none",
-                           panel.background = element_rect(fill = "white", colour = "grey50"),
-                           axis.title = element_text(size = 12, family="Comic Sans MS"))
-                           )
-  }
-}
-
-```
-
-# Córdoba
-
-```{r,message=FALSE, warning=FALSE, echo=FALSE, results = "asis"}
-Filtrado <- filter(Data, Data$PROVINCIA == "Córdoba")
-
-HIC <- unique(Filtrado$HIC)
-RUE <- unique(Filtrado$RUE)
-
-for (i in 1:length(HIC)){
-  sel <- dplyr::filter(Filtrado, Filtrado$HIC == HIC[i])
-  cat(paste0("\n\n## ", HIC[i], "\n"))
-  for (j in 1:length(RUE)){
-    aa <- dplyr::filter(sel, sel$RUE == RUE[j])
-    print(ggbetweenstats(aa, 
-                         FIGURA, AREA_km, 
-                         bf.message = FALSE,
-                         plot.type = "boxviolin", 
-                         type = "nonparametric",
-                         xlab = "Figura",
-                         ylab = bquote("Area " (km^2)),
-                         title = paste0(RUE[j]),
-                         outlier.color = "grey50",
-                         point.args = list(position = ggplot2::position_jitterdodge(dodge.width = 0.6), alpha =
-                                             0.2, size = 3, stroke = 0, na.rm = TRUE),
-                         ggtheme = ggplot2::theme_gray(), 
-                         package = "yarrr", 
-                         palette = "bugs")+
-            ggplot2::theme(legend.position = "none",
-                           panel.background = element_rect(fill = "white", colour = "grey50"),
-                           axis.title = element_text(size = 12, family="Comic Sans MS"))
-                           )
-  }
-}
-
-```
-
-# Granada
-
-```{r,message=FALSE, warning=FALSE, echo=FALSE, results = "asis"}
-Filtrado <- filter(Data, Data$PROVINCIA == "Granada")
-
-HIC <- unique(Filtrado$HIC)
-RUE <- unique(Filtrado$RUE)
-
-for (i in 1:length(HIC)){
-  sel <- dplyr::filter(Filtrado, Filtrado$HIC == HIC[i])
-  cat(paste0("\n\n## ", HIC[i], "\n"))
-  for (j in 1:length(RUE)){
-    aa <- dplyr::filter(sel, sel$RUE == RUE[j])
-    print(ggbetweenstats(aa, 
-                         FIGURA, AREA_km, 
-                         bf.message = FALSE,
-                         plot.type = "boxviolin", 
-                         type = "nonparametric",
-                         xlab = "Figura",
-                         ylab = bquote("Area " (km^2)),
-                         title = paste0(RUE[j]),
-                         outlier.color = "grey50",
-                         point.args = list(position = ggplot2::position_jitterdodge(dodge.width = 0.6), alpha =
-                                             0.2, size = 3, stroke = 0, na.rm = TRUE),
-                         ggtheme = ggplot2::theme_gray(), 
-                         package = "yarrr", 
-                         palette = "bugs")+
-            ggplot2::theme(legend.position = "none",
-                           panel.background = element_rect(fill = "white", colour = "grey50"),
-                           axis.title = element_text(size = 12, family="Comic Sans MS"))
-                           )
-  }
-}
-
-```
-
-# Huelva
-
-```{r,message=FALSE, warning=FALSE, echo=FALSE, results = "asis"}
-Filtrado <- filter(Data, Data$PROVINCIA == "Huelva")
-
-HIC <- unique(Filtrado$HIC)
-RUE <- unique(Filtrado$RUE)
-
-for (i in 1:length(HIC)){
-  sel <- dplyr::filter(Filtrado, Filtrado$HIC == HIC[i])
-  cat(paste0("\n\n## ", HIC[i], "\n"))
-  for (j in 1:length(RUE)){
-    aa <- dplyr::filter(sel, sel$RUE == RUE[j])
-    print(ggbetweenstats(aa, 
-                         FIGURA, AREA_km, 
-                         bf.message = FALSE,
-                         plot.type = "boxviolin", 
-                         type = "nonparametric",
-                         xlab = "Figura",
-                         ylab = bquote("Area " (km^2)),
-                         title = paste0(RUE[j]),
-                         outlier.color = "grey50",
-                         point.args = list(position = ggplot2::position_jitterdodge(dodge.width = 0.6), alpha =
-                                             0.2, size = 3, stroke = 0, na.rm = TRUE),
-                         ggtheme = ggplot2::theme_gray(), 
-                         package = "yarrr", 
-                         palette = "bugs")+
-            ggplot2::theme(legend.position = "none",
-                           panel.background = element_rect(fill = "white", colour = "grey50"),
-                           axis.title = element_text(size = 12, family="Comic Sans MS"))
-                           )
-  }
-}
-
-```
-
-# Jaén
-
-```{r,message=FALSE, warning=FALSE, echo=FALSE, results = "asis"}
-Filtrado <- filter(Data, Data$PROVINCIA == "Jaén")
-
-HIC <- unique(Filtrado$HIC)
-RUE <- unique(Filtrado$RUE)
-
-for (i in 1:length(HIC)){
-  sel <- dplyr::filter(Filtrado, Filtrado$HIC == HIC[i])
-  cat(paste0("\n\n## ", HIC[i], "\n"))
-  for (j in 1:length(RUE)){
-    aa <- dplyr::filter(sel, sel$RUE == RUE[j])
-    print(ggbetweenstats(aa, 
-                         FIGURA, AREA_km, 
-                         bf.message = FALSE,
-                         plot.type = "boxviolin", 
-                         type = "nonparametric",
-                         xlab = "Figura",
-                         ylab = bquote("Area " (km^2)),
-                         title = paste0(RUE[j]),
-                         outlier.color = "grey50",
-                         point.args = list(position = ggplot2::position_jitterdodge(dodge.width = 0.6), alpha =
-                                             0.2, size = 3, stroke = 0, na.rm = TRUE),
-                         ggtheme = ggplot2::theme_gray(), 
-                         package = "yarrr", 
-                         palette = "bugs")+
-            ggplot2::theme(legend.position = "none",
-                           panel.background = element_rect(fill = "white", colour = "grey50"),
-                           axis.title = element_text(size = 12, family="Comic Sans MS"))
-                           )
-  }
-}
-
-```
-
-# Málaga
-
-```{r,message=FALSE, warning=FALSE, echo=FALSE, results = "asis"}
-Filtrado <- filter(Data, Data$PROVINCIA == "Málaga")
-
-HIC <- unique(Filtrado$HIC)
-RUE <- unique(Filtrado$RUE)
-
-for (i in 1:length(HIC)){
-  sel <- dplyr::filter(Filtrado, Filtrado$HIC == HIC[i])
-  cat(paste0("\n\n## ", HIC[i], "\n"))
-  for (j in 1:length(RUE)){
-    aa <- dplyr::filter(sel, sel$RUE == RUE[j])
-    print(ggbetweenstats(aa, 
-                         FIGURA, AREA_km, 
-                         bf.message = FALSE,
-                         plot.type = "boxviolin", 
-                         type = "nonparametric",
-                         xlab = "Figura",
-                         ylab = bquote("Area " (km^2)),
-                         title = paste0(RUE[j]),
-                         outlier.color = "grey50",
-                         point.args = list(position = ggplot2::position_jitterdodge(dodge.width = 0.6), alpha =
-                                             0.2, size = 3, stroke = 0, na.rm = TRUE),
-                         ggtheme = ggplot2::theme_gray(), 
-                         package = "yarrr", 
-                         palette = "bugs")+
-            ggplot2::theme(legend.position = "none",
-                           panel.background = element_rect(fill = "white", colour = "grey50"),
-                           axis.title = element_text(size = 12, family="Comic Sans MS"))
-                           )
-  }
-}
-
-```
-
-# Sevilla
-
-```{r,message=FALSE, warning=FALSE, echo=FALSE, results = "asis"}
-Filtrado <- filter(Data, Data$PROVINCIA == "Sevilla")
-
-HIC <- unique(Filtrado$HIC)
-RUE <- unique(Filtrado$RUE)
-
-for (i in 1:length(HIC)){
-  sel <- dplyr::filter(Filtrado, Filtrado$HIC == HIC[i])
-  cat(paste0("\n\n## ", HIC[i], "\n"))
-  for (j in 1:length(RUE)){
-    aa <- dplyr::filter(sel, sel$RUE == RUE[j])
-    print(ggbetweenstats(aa, 
-                         FIGURA, AREA_km, 
-                         bf.message = FALSE,
-                         plot.type = "boxviolin", 
-                         type = "nonparametric",
-                         xlab = "Figura",
-                         ylab = bquote("Area " (km^2)),
-                         title = paste0(RUE[j]),
-                         outlier.color = "grey50",
-                         point.args = list(position = ggplot2::position_jitterdodge(dodge.width = 0.6), alpha =
-                                             0.2, size = 3, stroke = 0, na.rm = TRUE),
-                         ggtheme = ggplot2::theme_gray(), 
-                         package = "yarrr", 
-                         palette = "bugs")+
-            ggplot2::theme(legend.position = "none",
-                           panel.background = element_rect(fill = "white", colour = "grey50"),
-                           axis.title = element_text(size = 12, family="Comic Sans MS"))
-                           )
-  }
-}
-
 ```
