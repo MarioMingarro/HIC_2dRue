@@ -55,3 +55,6 @@ Data$RUE_CODE <- replace(Data$RUE_CODE, Data$RUE_CODE == "Anomalias de alto rend
 
 
 prop.table(Data$AREA_km)
+
+CHFE50 <- unique(Data$CHFE50)
+sel <- dplyr::filter(Data, Data$CHFE50 == CHFE50[1])
