@@ -52,3 +52,6 @@ Data$RUE_CODE <- replace(Data$RUE_CODE, Data$RUE_CODE == "Submaduro", "7")
 Data$RUE_CODE <- replace(Data$RUE_CODE, Data$RUE_CODE == "Maduro", "8")
 Data$RUE_CODE <- replace(Data$RUE_CODE, Data$RUE_CODE == "De referencia", "9")
 Data$RUE_CODE <- replace(Data$RUE_CODE, Data$RUE_CODE == "Anomalias de alto rendimiento", "10")
+
+
+prop.table(Data$AREA_km)

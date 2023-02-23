@@ -43,44 +43,56 @@ Tabla <- data.frame(HIC= character(),
                     RUE = character(),
                     p = numeric())
 
-for (i in 1:length(HIC)){
+for (i in c(1,2,3,4,5,6,7,9,10,11,12,13,14,15,16,17,18,19,20,21)){
   sel <- dplyr::filter(Data, Data$HIC == HIC[i])
   cat(paste0("\n\n## ", HIC[i], "\n"))
   Tabla_1 <- data.frame(HIC= character(),
                       RUE = character(),
                       p = numeric())
+  
   for (j in 1:length(RUE)){
     aa <- dplyr::filter(sel, sel$RUE == RUE[j])
-    RN2000 <- dplyr::filter(aa, aa$FIGURA == "RN2000")
-    NP <- dplyr::filter(aa, aa$FIGURA == "RN2000")
     WT <- wilcox.test(AREA_km ~ FIGURA, data = aa,
                 exact = FALSE)
-    
     
     Tabla_2 <- data.frame(HIC = "A",
                           RUE = "A",
                           p = 2)
     Tabla_2[1,1] <- HIC[i]
     Tabla_2[1,2] <- RUE[j]
-    Tabla_2[1,2] <- WT$p.value
+    Tabla_2[1,3] <- WT$p.value
+    Tabla_1 <- rbind(Tabla_1, Tabla_2)
     
-    print(ggbetweenstats(aa, 
-                         FIGURA, AREA_km, 
-                         bf.message = FALSE,
-                         plot.type = "boxviolin", 
-                         type = "nonparametric",
-                         xlab = "Figura",
-                         ylab = bquote("Area " (km^2)),
-                         title = paste0(RUE[j]),
-                         outlier.color = "grey50",
-                         point.args = list(position = ggplot2::position_jitterdodge(dodge.width = 0.6), alpha =
-                                             0.2, size = 3, stroke = 0, na.rm = TRUE),
-                         ggtheme = ggplot2::theme_gray(), 
-                         package = "yarrr", 
-                         palette = "bugs")+
-            ggplot2::theme(legend.position = "none",
-                           panel.background = element_rect(fill = "white", colour = "grey50"),
-                           axis.title = element_text(size = 12, family="Comic Sans MS"))
-    )
+    
+
   }
+  Tabla <- rbind(Tabla, Tabla_1)
 }
+Tabla$p <-round(Tabla$p,4)
+
+
+
+library(formattable)
+Tabla_kk <- formattable(Tabla, list(
+  p = formatter("span", 
+                        style = ~ style(color = ifelse(Tabla$p < 0.05, "black", "red")))))
+
+
+print(ggbetweenstats(aa, 
+                     FIGURA, AREA_km, 
+                     bf.message = FALSE,
+                     plot.type = "boxviolin", 
+                     type = "nonparametric",
+                     xlab = "Figura",
+                     ylab = bquote("Area " (km^2)),
+                     title = paste0(RUE[j]),
+                     outlier.color = "grey50",
+                     point.args = list(position = ggplot2::position_jitterdodge(dodge.width = 0.6), alpha =
+                                         0.2, size = 3, stroke = 0, na.rm = TRUE),
+                     ggtheme = ggplot2::theme_gray(), 
+                     package = "yarrr", 
+                     palette = "bugs")+
+        ggplot2::theme(legend.position = "none",
+                       panel.background = element_rect(fill = "white", colour = "grey50"),
+                       axis.title = element_text(size = 12, family="Comic Sans MS"))
+)
