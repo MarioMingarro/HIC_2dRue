@@ -9,7 +9,7 @@ Data <- Data[,c(4,13,14,34,28,25,40)]
 colnames(Data) <- c("PROVINCIA", "FIGURA", "NOMBRE", "CHFE50", "RUE", "THIC", "AREA_m")
 Data$FIGURA <- replace(Data$FIGURA, Data$FIGURA == "LIC", "RN2000")
 Data$FIGURA <- replace(Data$FIGURA, Data$FIGURA == "ZEPA", "RN2000")
-Data$AREA_km <- cbind(Data$AREA/1000000)
+Data$AREA_km <- cbind(Data$AREA/1000000) 
 
 
 THIC <- c(9120,9130,9150,9160,9180,9230,9240,9260,9320,9330,9340,9360,9370,9380,9430,9520,9530,9540,9550,9560,9570,9580)
