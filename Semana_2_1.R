@@ -54,6 +54,7 @@ Data$RUE_CODE <- replace(Data$RUE_CODE, Data$RUE_CODE == "De referencia", "9")
 Data$RUE_CODE <- replace(Data$RUE_CODE, Data$RUE_CODE == "Anomalias de alto rendimiento", "10")
 
 
+
 rm(Definicion_THIC)
 rm(THIC)
 # Wilcoson test
