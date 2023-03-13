@@ -36,3 +36,5 @@ dt <- dt[,-1]
 
 
 chisq.test(dt)
+
+
