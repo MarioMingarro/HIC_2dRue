@@ -5,7 +5,7 @@ library(extrafont)
 
 
 
-Data <- read.csv2("D:/GABRIEL/RESULTADOS/THIC_RN_2dRUE_AN_2.txt", encoding="UTF-8")
+Data <- read.csv2("D:/GABRIEL/RESULTADOS/NEW/THIC_RN_2dRUE_AN_2.txt", encoding="UTF-8")
 
 
 
