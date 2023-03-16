@@ -5,23 +5,68 @@ library(extrafont)
 
 
 
-Data <- read.csv2("A:/GABRIEL/RESULTADOS/RESULTADOS_AN.txt", encoding="UTF-8")
+Data <- read.csv2("D:/GABRIEL/RESULTADOS/NEW/THIC_RN_2dRUE_AN_2.txt", encoding="UTF-8")
 
-Data$S_NAT3_c_1 <- str_replace(Data$S_NAT3_c_1 , ".*_", "")
 
-# "Texto" 4 PROVINCIA
-# "FIGURA" 13 FIGURA
-# "NOMBRE" 14 Nombre PA
-# "S_NAT3_c_1" 34 HIC
-# "Estado"  28 RUE
-# "AREA" 37 area
 
-Data <- Data[,c(4,13,14,34,28,40)]
-colnames(Data) <- c("PROVINCIA", "FIGURA", "NOMBRE", "HIC", "RUE", "AREA_m")
-Data$FIGURA <- replace(Data$FIGURA, Data$FIGURA == "LIC", "RN2000")
-Data$FIGURA <- replace(Data$FIGURA, Data$FIGURA == "ZEPA", "RN2000")
+Data <- Data[,c(44,50,54,55)]
+colnames(Data) <- c("THIC", "FIGURA", "RUE", "AREA_m")
 Data$AREA_km <- cbind(Data$AREA/1000000)
 
+aaa <- unique(Data$THIC)
+bbb <- unique(Data$RUE)
+
+Tabla <- data.frame(THIC= character(),
+                    RUE = character(),
+                    p = numeric())
+i=1
+j=1
+for (i in 1:length(aaa)){
+  sel <- dplyr::filter(Data, Data$THIC == aaa[i])
+  Tabla_1 <- data.frame(THIC = character(),
+                      RUE = character(),
+                      p = numeric())
+  
+  for (j in 1:length(bbb)){
+    aa <- dplyr::filter(sel, sel$RUE == bbb[j])
+    try({
+    WT <- wilcox.test(AREA_km ~ FIGURA, data = aa,
+                exact = FALSE)
+    
+    
+    print(paste0(aaa[i], "_", bbb[j]))
+    
+    Tabla_2 <- data.frame(THIC = "A",
+                          RUE = "A",
+                          p = 2)
+    Tabla_2[1,1] <- aaa[i]
+    Tabla_2[1,2] <- bbb[j]
+    Tabla_2[1,3] <- WT$p.value
+    
+    Tabla_1 <- rbind(Tabla_1, Tabla_2)
+    })
+  }
+  Tabla <- rbind(Tabla, Tabla_1)
+}
+Tabla$p <-round(Tabla$p,4)
+
+kk <- as.data.frame(Tabla %>% 
+  group_by(THIC, RUE, p) %>% 
+  pivot_wider(names_from = THIC, values_from = p))
+
+writexl::write_xlsx(kk, "D:/GABRIEL/RESULTADOS/NEW/wilcoxon_THIC_RUE.xlsx")
+
+---------------------------------------------------------
+-------                                         ---------
+---------------------------------------------------------
+  
+  Data$S_NAT3_c_1 <- str_replace(Data$S_NAT3_c_1 , ".*_", "")
+
+Data$FIGURA <- replace(Data$FIGURA, Data$FIGURA == "LIC", "RN2000")
+Data$FIGURA <- replace(Data$FIGURA, Data$FIGURA == "ZEPA", "RN2000")# THIC 44
+# Figura 50
+# RUE 54
+# Area 55
 Data$RUE_CODE <- Data$RUE
 Data$RUE_CODE <- replace(Data$RUE_CODE, Data$RUE_CODE == "Degradado", "1")
 Data$RUE_CODE <- replace(Data$RUE_CODE, Data$RUE_CODE == "Productivo de baja biomasa", "2")
@@ -33,44 +78,7 @@ Data$RUE_CODE <- replace(Data$RUE_CODE, Data$RUE_CODE == "De referencia", "7")
 Data$RUE_CODE <- replace(Data$RUE_CODE, Data$RUE_CODE == "Muy degradado", "8")
 Data$RUE_CODE <- replace(Data$RUE_CODE, Data$RUE_CODE == "Anomaias de bajo rendimiento", "9")
 Data$RUE_CODE <- replace(Data$RUE_CODE, Data$RUE_CODE == "Anomalias de alto rendimiento", "10")
-
-
-
-HIC <- unique(Data$HIC)
-RUE <- unique(Data$RUE)
-
-Tabla <- data.frame(HIC= character(),
-                    RUE = character(),
-                    p = numeric())
-
-for (i in c(1,2,3,4,5,6,7,9,10,11,12,13,14,15,16,17,18,19,20,21)){
-  sel <- dplyr::filter(Data, Data$HIC == HIC[i])
-  cat(paste0("\n\n## ", HIC[i], "\n"))
-  Tabla_1 <- data.frame(HIC= character(),
-                      RUE = character(),
-                      p = numeric())
   
-  for (j in 1:length(RUE)){
-    aa <- dplyr::filter(sel, sel$RUE == RUE[j])
-    WT <- wilcox.test(AREA_km ~ FIGURA, data = aa,
-                exact = FALSE)
-    
-    Tabla_2 <- data.frame(HIC = "A",
-                          RUE = "A",
-                          p = 2)
-    Tabla_2[1,1] <- HIC[i]
-    Tabla_2[1,2] <- RUE[j]
-    Tabla_2[1,3] <- WT$p.value
-    Tabla_1 <- rbind(Tabla_1, Tabla_2)
-    
-    
-
-  }
-  Tabla <- rbind(Tabla, Tabla_1)
-}
-Tabla$p <-round(Tabla$p,4)
-
-
 
 library(formattable)
 Tabla_kk <- formattable(Tabla, list(
