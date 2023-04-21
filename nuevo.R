@@ -1,13 +1,47 @@
 # Carga los datos
 library(readr)
 library(tidyverse)
+library(foreign)
 
-
+datos <- foreign::read.dbf("D:/GABRIEL/NUEVO/salida.dbf")
 datos <- read_delim("D:/GABRIEL/NUEVO/2dRUE_ZEC_NO_AP_25.txt", 
                             ";", escape_double = FALSE, 
                             locale = locale(decimal_mark = ",", grouping_mark = "."), 
                             trim_ws = TRUE)
 
+Encoding(datos$Nombre) <- "UTF-8"
+
+names <- unique(datos$Nombre)
+
+names <- names[1:3]
+
+SER <- data.frame(name = character(),
+                  SER = numeric())
+
+for (i in 1:length(names)){
+  ZEC <- datos %>% 
+    filter(Nombre == names[i])
+  
+  SER_1 <- data.frame(name = "a",
+                    SER = 2)
+  
+  porcentaje_por_valor <- prop.table(table(ZEC$gridcode)) * 100
+  
+  SR_b <- sum(replace(porcentaje_por_valor[6:10],is.na(porcentaje_por_valor[6:10]),0))
+  
+  SR_a <- sum(replace(porcentaje_por_valor[3:5],is.na(porcentaje_por_valor[3:5]),0))
+  SER_2 <- (SR_b-SR_a)/(SR_b+SR_a)
+  SER_1$SER <- SER_2
+  SER_1$name <- names[i]
+  SER <- rbind(SER, SER_1)
+}
+i=4
+#GIS 71 con superficie mayor a 10km2
+kk <- SER %>% 
+  filter(SER >= -0.99) 
+
+#######################################
+#######################################
 ZEC <- datos %>% 
   filter(FIGURA == "ZEC")
 
