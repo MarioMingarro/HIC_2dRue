@@ -206,7 +206,7 @@ resultados <- data.frame()
 # Realizar múltiples selecciones aleatorias del tamaño muestral
 
 for (i in 10:10000) {
-  muestra <- sample_n(ZEC, i, replace = TRUE)
+  muestra <- sample_n(No_protegido, i, replace = TRUE)
   
   porcentaje_por_valor <- prop.table(table(muestra$gridcode)) * 100
   SR_b <- sum(porcentaje_por_valor[6:10])
@@ -216,7 +216,7 @@ for (i in 10:10000) {
   resultados <- rbind(resultados, data.frame(Replica = i, SER = SER))
 }
 
-porcentaje_por_valor <- prop.table(table(NP$gridcode)) * 100
+porcentaje_por_valor <- prop.table(table(No_protegido$gridcode)) * 100
 SR_b <- sum(porcentaje_por_valor[6:10])
 SR_a <- sum(porcentaje_por_valor[3:5])
 
@@ -242,11 +242,12 @@ for (i in 10:10000) {
 # Generar el gráfico de caja y bigotes
 ggplot(resultados, aes(x = Replica, y = SER)) +
   geom_point(alpha= .2, size = 0.5, col = "blue") +
-  geom_point(data=resultados_2, aes(x = Replica_2, y = SER_2), alpha= .2, size = 0.5, col = "red")+
-  geom_hline(yintercept = SER_G, col = "black") +
-  scale_x_continuous(breaks = c(10, 1000, 5000, 10000))+
+  geom_hline(yintercept = c(SER_G, SER_G+0.1, SER_G-0.1), col = "black") +
+  geom_hline(yintercept = SER_G,  col = "red") +
+  geom_vline(xintercept = 500, col = "black") +
+  scale_x_continuous(breaks = c(10, 500, 1000, 5000, 10000))+
   labs(x = "nº pixeles", y = "SER") +
-  ggtitle("Estabilización del SER con reemplazo (azul) y sin reemplazo (rojo)") +
+  ggtitle("Estabilización del SER") +
   theme_classic()
 
 #################################
