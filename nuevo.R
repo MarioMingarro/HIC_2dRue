@@ -74,10 +74,7 @@ for (i in 1:length(Nombres)){
 
 writexl::write_xlsx(SER, "D:/GABRIEL/NUEVO_2/RESULTADOS_ZEC_SER.xlsx")
 
-#GIS 71 con superficie mayor a 10km2
-kk <- SER %>% 
-  filter(SER >= -0.99) 
-kk <- kk[-1,]
+
 
 #Relacion SER y area
 aa <- datos[, c(5,7)]
@@ -91,20 +88,26 @@ ggplot(kk, aes(x= AREA, y = SER))+
 cor(kk$AREA, kk$SER)
 
 
-# Calculo SER en zonas no porotegidas
-mean(kk$AREA)
+# Calculo SER en zonas no protegidas
+
+kk <- datos %>% group_by(datos$ZEC__Nombr) %>%
+  summarise(mean = mean(AREA_I), n = n()) 
+kk <- kk$mean
+
+mean(kk)
+
 # Area 430
 count(kk)
 # n = 53
-No_protegido <- filter(datos, datos$FIGURA == "NP")
+No_protegido <- filter(datos, datos$ZEC__FIGUR == "NP")
 
 
 
 SER_NP <- data.frame(i = numeric(),
                      SER = numeric())
 
-for (i in 1:53){
-  rand_No_protegido <- No_protegido[sample(nrow(No_protegido), size=500),]
+for (i in 1:65){
+  rand_No_protegido <- No_protegido[sample(nrow(No_protegido), size=kk[2]),]
   
   SER_1 <- data.frame(i = 2,
                       SER = 2)
