@@ -4,15 +4,17 @@ library(tidyverse)
 library(foreign)
 
 datos <- foreign::read.dbf("D:/GABRIEL/NUEVO/salida.dbf")
+datos <- foreign::read.dbf("D:/GABRIEL/NUEVO_2/2dRUE_area_estudio_025.dbf")
 # datos <- read_delim("D:/GABRIEL/NUEVO/2dRUE_ZEC_NO_AP_25.txt", 
 #                             ";", escape_double = FALSE, 
 #                             locale = locale(decimal_mark = ",", grouping_mark = "."), 
 #                             trim_ws = TRUE)
 
-Encoding(datos$Nombre) <- "UTF-8"
+datos$ZEC__Nombr <- as.character(datos$ZEC__Nombr)
+Encoding(datos$ZEC__Nombr) <- "UTF-8"
 
 # Calculo del indice SER
-Nombres <- unique(datos$Nombre)
+Nombres <- unique(datos$ZEC__Nombr)
 
 SER <- data.frame(name = character(),
                   SER = numeric(),
@@ -29,7 +31,7 @@ SER <- data.frame(name = character(),
 
 for (i in 1:length(Nombres)){
   ZEC <- datos %>% 
-    filter(Nombre == Nombres[i])
+    filter(ZEC__Nombr == Nombres[i])
   
   SER_1 <- data.frame(Nombre = "a",
                     SER = 2,
@@ -70,7 +72,7 @@ for (i in 1:length(Nombres)){
   SER <- rbind(SER, SER_1)
 }
 
-writexl::write_xlsx(SER_NP, "D:/GABRIEL/NUEVO/RESULTADOS_NP_SER.xlsx")
+writexl::write_xlsx(SER, "D:/GABRIEL/NUEVO_2/RESULTADOS_ZEC_SER.xlsx")
 
 #GIS 71 con superficie mayor a 10km2
 kk <- SER %>% 
