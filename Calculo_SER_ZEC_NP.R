@@ -3,21 +3,23 @@ library(readr)
 library(tidyverse)
 library(foreign)
 
-datos <- foreign::read.dbf("D:/GABRIEL/NUEVO_2/2dRUE_area_estudio_025.dbf")
-datos$ZEC__Nombr <- as.character(datos$ZEC__Nombr)
-Encoding(datos$ZEC__Nombr) <- "UTF-8"
+datos <- foreign::read.dbf("A:/2dRUE_LIC/Data_2dRUE_area_estudio.dbf")
+datos$lic_name <- as.character(datos$lic_name)
+datos$CCAA <- as.character(datos$CCAA)
+Encoding(datos$lic_name) <- "UTF-8"
+Encoding(datos$CCAA) <- "UTF-8"
 
 # Calculo de area y n pixeles
-n <- datos %>% group_by(datos$ZEC__Nombr) %>%
-  summarise(mean = mean(AREA_I), n = n()) 
-n <- n[-23,]
+n <- datos %>% group_by(datos$lic_name) %>%
+  summarise(mean = mean(AREA_2), n = n()) 
+n <- n[-246,] #No protegido
 n <- n$mean
 
 # Calculo del indice SER
 # Con muestreo aleatorio dentro ZEC
-Nombres <- unique(datos$ZEC__Nombr)
+Nombres <- unique(datos$lic_name)
 
-SER_ZEC <- data.frame(name = character(),
+SER_LIC <- data.frame(name = character(),
                   SER = numeric(),
                   ABR = numeric(),
                   BAS = numeric(),
@@ -30,10 +32,11 @@ SER_ZEC <- data.frame(name = character(),
                   REF = numeric(),
                   AAR = numeric())
 
-ZEC <- filter(datos, datos$ZEC__FIGUR == "ZEC")
+LIC <- filter(datos, datos$Figura== "LIC")
 
-for (i in 1:64){
-  rand_ZEC <- ZEC[sample(nrow(ZEC), size=n[i]),]
+
+for (i in 1:length(n)){
+  rand_LIC <- LIC[sample(nrow(LIC), size=n[i]),]
   
   SER_1 <- data.frame(n = "a",
                       SER = 2,
@@ -48,7 +51,7 @@ for (i in 1:64){
                       REF = 2,
                       AAR = 2)
   
-  porcentaje_por_valor <- prop.table(table(rand_ZEC$gridcode)) * 100
+  porcentaje_por_valor <- prop.table(table(rand_LIC$gridcode)) * 100
   
   # Obtener el número de columnas en porcentaje_por_valor
   num_columnas <- length(porcentaje_por_valor)
@@ -71,10 +74,10 @@ for (i in 1:64){
   SER_2 <- (SR_b-SR_a)/(SR_b+SR_a)
   SER_1$SER <- SER_2
   SER_1$n <- n[i]
-  SER_ZEC <- rbind(SER_ZEC, SER_1)
+  SER_LIC <- rbind(SER_LIC, SER_1)
 }
 
-writexl::write_xlsx(SER_ZEC, "D:/GABRIEL/NUEVO_2//RESULTADOS/RESULTADOS_ZEC_SER.xlsx")
+writexl::write_xlsx(SER_LIC, "D:/GABRIEL/NUEVO_2//RESULTADOS/RESULTADOS_LIC_SER.xlsx")
 
 # No protegido
 
@@ -92,9 +95,9 @@ SER_NP <- data.frame(name = character(),
                   REF = numeric(),
                   AAR = numeric())
 
-No_protegido <- filter(datos, datos$ZEC__FIGUR == "NP")
+No_protegido <- filter(datos, datos$Figura == "NP")
 
-for (i in 1:64){
+for (i in 1:length(n)){
   rand_NP <- No_protegido[sample(nrow(No_protegido), size=n[i]),]
   
   SER_1 <- data.frame(n = "a",
@@ -161,11 +164,25 @@ ggplot(data= resultados, aes(x = Replica, y = SER))+
   geom_point(col = "darkolivegreen4")+
   geom_smooth(se = F, col = "red")
 
+## TEST NORMALIDAD
+ks.test(datos$gridcode, "pnorm")
 
+kk <- filter(SER_LIC, SER_LIC$SER >-1)
+
+ks.test(kk$SER, "pnorm")
+ks.test(unique(SER_NP$SER), "pnorm")
+
+hist(SER_LIC$SER)
+hist(SER_ALL$SER)
+hist(SER_NP$SER)
+shapiro.test(SER_LIC$SER)
+shapiro.test(SER_NP$SER)
+
+ks.prueba(SER_LIC$SER, SER_NP$SER)
 ## GRáFICO -----
 
 ggplot()+
-  geom_point(data= SER_ZEC, aes(x = n, y = SER), col = "darkolivegreen4")+
-  geom_smooth(data= SER_ZEC, aes(x = n, y = SER), se = F, col = "darkolivegreen4")+
+  geom_point(data= SER_LIC, aes(x = n, y = SER), col = "darkolivegreen4")+
+  geom_smooth(data= SER_LIC, aes(x = n, y = SER), se = F, col = "darkolivegreen4")+
   geom_point(data= SER_NP, aes(x = n, y = SER), col = "red")+
   geom_smooth(data= SER_NP, aes(x = n, y = SER), se = F, col = "red")
