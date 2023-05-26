@@ -14,6 +14,7 @@ n <- datos %>% group_by(datos$lic_name) %>%
   summarise(mean = mean(AREA_2), n = n()) 
 n <- n[-246,] #No protegido
 n <- n$mean
+sum(n$mean)*0.2/30
 
 # Calculo del indice SER
 # Con muestreo aleatorio dentro ZEC
@@ -142,15 +143,17 @@ for (i in 1:length(n)){
 
 writexl::write_xlsx(SER_NP, "D:/GABRIEL/NUEVO_2//RESULTADOS/RESULTADOS_NP_SER.xlsx")
 
-resultados <- data.frame()
 
-25278*0.20
-5055.6/64
+####################################
+#############################################
+
+
+resultados <- data.frame()
 
 # Realizar múltiples selecciones aleatorias del tamaño muestral
 
-for (i in 10:10000) {
-  muestra <- sample_n(ZEC, i, replace = TRUE)
+for (i in 1:1000) {
+  muestra <- sample_n(LIC, 1000, replace = TRUE)
   
   porcentaje_por_valor <- prop.table(table(muestra$gridcode)) * 100
   SR_b <- sum(porcentaje_por_valor[6:10])
@@ -182,7 +185,7 @@ ks.prueba(SER_LIC$SER, SER_NP$SER)
 ## GRáFICO -----
 
 ggplot()+
-  geom_point(data= SER_LIC, aes(x = n, y = SER), col = "darkolivegreen4")+
+  geom_point(data= SER_LIC, aes(x = n, y = SER), col = "darkolivegreen4", alpha = .2)+
   geom_smooth(data= SER_LIC, aes(x = n, y = SER), se = F, col = "darkolivegreen4")+
-  geom_point(data= SER_NP, aes(x = n, y = SER), col = "red")+
+  geom_point(data= SER_NP, aes(x = n, y = SER), col = "red", alpha = .2)+
   geom_smooth(data= SER_NP, aes(x = n, y = SER), se = F, col = "red")
