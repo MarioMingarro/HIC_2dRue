@@ -37,7 +37,7 @@ LIC <- filter(datos, datos$Figura== "LIC")
 
 
 for (i in 1:length(n)){
-  rand_LIC <- LIC[sample(nrow(LIC), size=n[i]),]
+  rand_LIC <- LIC[sample(nrow(LIC), size = 2500),]
   
   SER_1 <- data.frame(n = "a",
                       SER = 2,
@@ -78,6 +78,12 @@ for (i in 1:length(n)){
   SER_LIC <- rbind(SER_LIC, SER_1)
 }
 
+hist(SER_LIC$SER)
+ks.test(SER_LIC$SER, "pnorm")
+shapiro.test(SER_LIC$SER)
+library("ggpubr")
+ggdensity(SER_LIC$SER)
+ggqqplot(SER_LIC$SER)
 writexl::write_xlsx(SER_LIC, "D:/GABRIEL/NUEVO_2//RESULTADOS/RESULTADOS_LIC_SER.xlsx")
 
 # No protegido
