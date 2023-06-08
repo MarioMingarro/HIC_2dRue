@@ -29,7 +29,7 @@ SER <- data.frame(name = character(),
                   REF = numeric(),
                   AAR = numeric())
 
-for (i in 1:length(Nombres)){
+for (i in 10:){
   ZEC <- datos %>% 
     filter(ZEC__Nombr == Nombres[i])
   
