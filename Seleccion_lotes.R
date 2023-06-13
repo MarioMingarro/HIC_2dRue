@@ -3,7 +3,7 @@ library(readr)
 library(tidyverse)
 library(foreign)
 
-datos <- foreign::read.dbf("A:/2dRUE_LIC/Data_2dRUE_area_estudio.dbf")
+datos <- foreign::read.dbf("A:/2dRUE_LIC/Data_2dRUE_area_estudio_REGBIO.dbf")
 datos$lic_name <- as.character(datos$lic_name)
 datos$CCAA <- as.character(datos$CCAA)
 Encoding(datos$lic_name) <- "UTF-8"
@@ -16,7 +16,7 @@ Encoding(datos$CCAA) <- "UTF-8"
 # Filtrar los datos para seleccionar solo los registros donde la columna "Figura" es igual a "LIC"
 LIC <- filter(datos, datos$Figura == "LIC")
 
-# Crear un nuevo data frame donde se almacenarán los resultados
+# Crear un nuevo dataframe donde se almacenarán los resultados
 SER_LIC <-  data.frame(
   name = character(),
   SER = numeric(),
@@ -31,7 +31,7 @@ SER_LIC <-  data.frame(
   REF = numeric(),
   AAR = numeric())
 
-for (i in 10:10000) {
+for (i in 10:5000) {
   rand_LIC <- LIC[sample(nrow(LIC), size = i),]
   
   SER_1 <- data.frame(
