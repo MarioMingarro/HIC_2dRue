@@ -31,6 +31,28 @@ writexl::write_xlsx(kk , "A:/2dRUE_LIC/REGBIO_areas.xlsx")
 datos %>% 
   filter(Figura != "NP") %>% 
   group_by(lic_name) %>% 
-  summarise(area = mean(AREA_RUE_2))
+  summarise(area = sum(AREA_RUE_2)) %>% 
+  summarise(area2 = mean(area))
+
+# Area promedio LIC = 193 km2
+# Varianza a 193 = 0.004311090
+
+
+
+area_LIC <- datos %>% 
+  filter(Figura != "NP") %>% 
+  group_by(lic_name) %>% 
+  summarise(area = sum(AREA_RUE_2))
+
+
+writexl::write_xlsx(area_LIC , "A:/2dRUE_LIC/LIC_areas.xlsx")
+
+
+datos %>% 
+  filter(Figura != "NP") %>% 
+  filter(CCAA == "Andalucía") %>% 
+  group_by(lic_name) %>% 
+  summarise(area = sum(AREA_RUE_2)) %>% 
+  summarise(area2 = mean(area))
 
 
