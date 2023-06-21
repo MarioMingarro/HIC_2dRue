@@ -21,8 +21,8 @@ SER_LIC <-  data.frame(
   SER = numeric()
 )
 
-for (j in 1:500) {
-  rand_LIC <- LIC[sample(nrow(LIC), size = 1500), ]
+for (j in 1:16) {
+  rand_LIC <- LIC[sample(nrow(LIC), size = 193), ]
   SER_1 <- data.frame(
     SER = 2,
     ABR = 2,

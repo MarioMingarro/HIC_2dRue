@@ -8,8 +8,8 @@ datos$CCAA <- as.character(datos$CCAA)
 Encoding(datos$lic_name) <- "UTF-8"
 Encoding(datos$CCAA) <- "UTF-8"
 datos$REGBIO <- as.character(datos$REGBIO)
+
 ## LIC ----
-# Con muestreo aleatorio dentro ZEC
 
 # Filtrar los datos para seleccionar solo los registros donde la columna "Figura" es igual a "LIC"
 LIC <- filter(datos, datos$Figura == "LIC")
@@ -24,8 +24,8 @@ REGBIO <- unique(datos$REGBIO)
 
 for (i in 1:length(REGBIO)) {
   filtrados <- filter(LIC, REGBIO == REGBIO[i])
-  for (j in 1:16){
-    rand_LIC <- filtrados[sample(nrow(filtrados), size = 193),]
+  for (j in 1:500){
+    rand_LIC <- filtrados[sample(nrow(filtrados), size = 1000),]
     SER_1 <- data.frame(
       REGBIO = "a",
       SER = 2,
@@ -82,7 +82,11 @@ SER_LIC %>%
   group_by(REGBIO) %>%
   summarise(area = mean(SER))
 
+SER_LIC %>%
+  summarise(area = mean(SER))
 
+writexl::write_xlsx(SER_NP , "D:/2dRUE_LIC/SER_NP.xlsx")
+########################
 alp_ser <- filter(SER_LIC, SER_LIC$REGBIO == "ALP") 
 alp_ser <- cbind("n" = rownames(alp_ser), alp_ser) 
 
@@ -98,22 +102,10 @@ atl_ser_p <- ggplot(atl_ser, aes(x = rownames(atl_ser), y = SER)) +
   geom_point(alpha= .2, size = 2,  col = "green")
 med_ser_p <- ggplot(med_ser, aes(x = rownames(med_ser), y = SER)) +
   geom_point(alpha= .2, size = 2,  col = "red")
+#############################
 
-# SER promedio por CCAA
-SER_LIC_REGBIO <- datos %>%
-  group_by(datos$REGBIO) %>%
-  summarise(area = sum(AREA_2)/193)
-median(SER_LIC_REGBIO$area)
 
-unique(filtrados$REGBIO)
-
-filtrados %>% 
-  summarise(area = sum(filtrados$AREA_2)) 
-
-writexl::write_xlsx(SER_NP , "D:/2dRUE_LIC/SER_NP.xlsx")
 ## NP ----
-
-# Con muestreo aleatorio fuera LIC
 
 # Filtrar los datos para seleccionar solo los registros donde la columna "Figura" es igual a "LIC"
 NP <- filter(datos, datos$Figura == "NP")
@@ -128,8 +120,8 @@ SER_NP <-  data.frame(
 
 for (i in 1:length(REGBIO)) {
   filtrados <- filter(NP, REGBIO == REGBIO[i])
-  for (j in 1:16){
-    rand_NP <- filtrados[sample(nrow(filtrados), size = 193),]
+  for (j in 1:500){
+    rand_NP <- filtrados[sample(nrow(filtrados), size = 1500),]
     SER_1 <- data.frame(
       CCAA = "a",
       SER = 2,
@@ -186,6 +178,8 @@ for (i in 1:length(REGBIO)) {
 # SER promedio por CCAA
 SER_NP %>%
   group_by(REGBIO) %>%
+  summarise(area = mean(SER)) 
+SER_NP %>%
   summarise(area = mean(SER)) 
 
 writexl::write_xlsx(SER_NP_CCAA , "A:/2dRUE_LIC/SER_NP_CCAA.xlsx")
