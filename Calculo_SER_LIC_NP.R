@@ -1,7 +1,7 @@
 library(tidyverse)
 library(foreign)
 
-datos <- foreign::read.dbf("A:/2dRUE_LIC/Data_2dRUE_area_estudio_REGBIO.dbf")
+datos <- foreign::read.dbf("D:/2dRUE_LIC/Data_2dRUE_area_estudio_REGBIO.dbf")
 datos$lic_name <- as.character(datos$lic_name)
 datos$CCAA <- as.character(datos$CCAA)
 Encoding(datos$lic_name) <- "UTF-8"
@@ -289,6 +289,21 @@ SER_NP_CCAA <- SER_NP %>%
 hist(SER_LIC$SER)
 
 writexl::write_xlsx(SER_NP_CCAA , "A:/2dRUE_LIC/SER_NP_CCAA.xlsx")
+
+## Significancia de diferencias---
+res <- data %>% 
+  group_by(CCAA) %>%
+  summarise(statistic_LIC = shapiro.test(LIC)$statistic,
+            p.value_LIC = shapiro.test(LIC)$p.value,
+            statistic_NP = shapiro.test(NP)$statistic,
+            p.value_NP = shapiro.test(NP)$p.value, 
+            t.test = t.test(LIC, NP)$statistic,
+            p.value = t.test(LIC, NP)$p.value,
+            rango_LIC = IQR(LIC),
+            rango_NP = IQR(NP))
+
+writexl::write_xlsx(res, "D:/2dRUE_LIC/diferencias_SER_LIC_NP_CCAA.xlsx")
+
 
 # REGBIO ----
 ## ZEC ----

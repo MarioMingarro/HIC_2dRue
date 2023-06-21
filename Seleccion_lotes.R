@@ -2,7 +2,7 @@
 library(tidyverse)
 library(foreign)
 
-datos <- foreign::read.dbf("A:/2dRUE_LIC/Data_2dRUE_area_estudio_REGBIO.dbf")
+datos <- foreign::read.dbf("D:/2dRUE_LIC/Data_2dRUE_area_estudio_REGBIO.dbf")
 datos$lic_name <- as.character(datos$lic_name)
 datos$CCAA <- as.character(datos$CCAA)
 Encoding(datos$lic_name) <- "UTF-8"
@@ -32,7 +32,7 @@ SER_LIC <-  data.frame(
   REF = numeric(),
   AAR = numeric())
 
-for (i in 10:5000) {
+for (i in 1:5000) {
   rand_LIC <- LIC[sample(nrow(LIC), size = i),]
   
   SER_1 <- data.frame(
@@ -108,18 +108,18 @@ ggarrange(ggarrange(a, b, ncol = 2),
 
 
 
-
-# Estabilización de la varianza
+# Estabilización de la varianza de 10 en 10
 
 Varianza <- data.frame(n = character(),
                        var = numeric())
 
-for(j in 1:9000){
+
+for(j in 1:4000){
   Varianza2 <- data.frame(n = 0,
                          var = 0)
   kk <- SER_LIC[j:(j+9),]
-  Varianza2$n <- kk[10, 1]
-  Varianza2$var <- var(kk$SER)
+  Varianza2$n <- kk[nrow(kk), 1]
+  Varianza2$var <- var(pp$SER)
   Varianza <- rbind(Varianza, Varianza2)
 }
 
@@ -143,6 +143,66 @@ c <- ggplot(Varianza, aes(x = n, y = var)) +
 ggarrange(ggarrange(a, b, ncol = 2),
           c,
           nrow = 2)
+
+
+ggplot(Varianza, aes(x = n, y = var)) +
+  geom_point(alpha= .2, size = 2, col = "red")+
+  xlim(c(0, 1000))+
+  geom_vline(xintercept = 193, col = "black")+
+  geom_hline(yintercept = c(0, Varianza$var[193]),linetype = "dashed", col = "grey10")+
+  xlab("Variance")+ 
+  ylab("nº of pixel")+
+  theme(
+    legend.title = element_blank()
+  )
+
+# Estabilización de la varianza acumulada
+Varianza <- data.frame(n = character(),
+                       var = numeric())
+
+pp <- data.frame(n = character(),
+                 var = numeric())
+for(j in 1:1000){
+  Varianza2 <- data.frame(n = 0,
+                          var = 0)
+  kk <- SER_LIC[j:(j+9),]
+  pp <- rbind(pp, kk)
+  Varianza2$n <- pp[nrow(pp), 1]
+  Varianza2$var <- var(pp$SER)
+  Varianza <- rbind(Varianza, Varianza2)
+}
+
+ggplot(Varianza, aes(x = n, y = var)) +
+  geom_point(alpha= .2, size = 2, col = "red")+
+  xlim(c(0, 1000))+
+  geom_vline(xintercept = 193, col = "black")+
+  geom_hline(yintercept = c(0, Varianza$var[193]),linetype = "dashed", col = "grey10")+
+  xlab("Variance")+ 
+  ylab("nº of pixel")+
+  theme(
+    legend.title = element_blank()
+  )
+
+
+##########################Q
+
+kk <- data.frame(n = integer(),
+                 rango = numeric())
+
+for(j in 1:3900){
+  kk2 <- data.frame(n = 1,
+                    rango = 0)
+  aa <- Varianza[j:(j+9),]
+  kk2$n <- aa[10, 1]
+  ss <- range(aa$var)
+  kk2$rango <- ss[2]-ss[1]
+  kk <- rbind(kk, kk2)
+}
+
+ggplot(kk, aes(x = n, y = rango)) +
+  geom_point(alpha= .2, size = 2, col = "red")+
+  xlim(c(0, 1000))+
+  geom_vline(xintercept = 193, col = "black")
 
 # NP ----
 
