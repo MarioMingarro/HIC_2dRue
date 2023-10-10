@@ -1,6 +1,11 @@
 # Carga los datos
 library(tidyverse)
-library(foreign)
+library(readr)
+
+
+LIC <- read_delim("A:/LIC_2dRUE/LIC_RUE/LIC_RUE_AREA25_CCAA_RBIO.txt", 
+                  delim = ";", escape_double = FALSE, locale = locale(decimal_mark = ","), 
+                  trim_ws = TRUE)
 
 datos <- foreign::read.dbf("A:/2dRUE_LIC/Data_2dRUE_area_estudio_REGBIO.dbf")
 datos$lic_name <- as.character(datos$lic_name)
@@ -79,7 +84,7 @@ for (i in 10:5000) {
   SER_LIC <- rbind(SER_LIC, SER_1)
   rm(porcentaje_por_valor, num_columnas, SR_b, SR_a, SER_1, SER_2, SER_LIC_2, rand_LIC)
 }
-mean(SER_LIC$SER)
+min(SER_LIC$SER)
 
 
 # Gráfico nº de pixeles utilizados en adicción
@@ -128,21 +133,36 @@ for(j in 1:9000){
 
 a <- ggplot(Varianza, aes(x = n, y = var)) +
   geom_point(alpha= .2, size = 2, col = "blue")+
-  geom_vline(xintercept = 193, col = "black")
+  geom_vline(xintercept = 190, col = "black")
 
 b <- ggplot(Varianza, aes(x = n, y = var)) +
   geom_point(alpha= .2, size = 2, col = "darkgreen")+
   xlim(c(0, 3000))+
-  geom_vline(xintercept = 193, col = "black")
+  geom_vline(xintercept = 190, col = "black")
 
 c <- ggplot(Varianza, aes(x = n, y = var)) +
   geom_point(alpha= .2, size = 2, col = "red")+
   xlim(c(0, 1000))+
-  geom_vline(xintercept = 193, col = "black")
+  geom_vline(xintercept = 190, col = "black")
 
 ggarrange(ggarrange(a, b, ncol = 2),
           c,
           nrow = 2)
+
+library(tidyverse)
+
+AREA_CCAA <- LIC %>% 
+  group_by(LIC$CCAA) %>% 
+  summarise(area_CCAA = sum(AREA_RUE))
+
+AREA_LIC <- LIC %>% 
+  group_by(LIC$NOMBRE) %>% 
+  summarise(area_LIC = sum(AREA_RUE))
+
+
+
+n <- ((mean(AREA_CCAA$area_CCAA)*50)/100)/mean(AREA_LIC$area_LIC)
+
 
 # NP ----
 

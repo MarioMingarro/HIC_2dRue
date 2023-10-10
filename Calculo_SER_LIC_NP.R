@@ -1,27 +1,27 @@
 library(tidyverse)
-library(foreign)
+library(readr)
 
-datos <- foreign::read.dbf("A:/2dRUE_LIC/Data_2dRUE_area_estudio_REGBIO.dbf")
-datos$lic_name <- as.character(datos$lic_name)
-datos$CCAA <- as.character(datos$CCAA)
-Encoding(datos$lic_name) <- "UTF-8"
-Encoding(datos$CCAA) <- "UTF-8"
+
+LIC <- read_delim("A:/LIC_2dRUE/LIC_RUE/LIC_RUE_AREA25_CCAA_RBIO.txt", 
+                  delim = ";", escape_double = FALSE, locale = locale(decimal_mark = ","), 
+                  trim_ws = TRUE)
+
+NP <- read_delim("A:/LIC_2dRUE/LIC_RUE/NO_RN2000_RUE_AREA25_CCAA_RBIO.txt", 
+                 delim = ";", escape_double = FALSE, locale = locale(decimal_mark = ","), 
+                 trim_ws = TRUE)
+
 
 # Calculo del indice SER
 # ESPAÑA ----
 ## LIC ----
-# Con muestreo aleatorio dentro LIC
-
-# Filtrar los datos para seleccionar solo los registros donde la columna "Figura" es igual a "LIC"
-LIC <- filter(datos, datos$Figura == "LIC")
 
 # Crear un nuevo dataframe donde se almacenarán los resultados
 SER_LIC <-  data.frame(
   SER = numeric()
 )
 
-for (j in 1:30) {
-  rand_LIC <- LIC[sample(nrow(LIC), size = 500), ]
+for (j in 1:20) {
+  rand_LIC <- LIC[sample(nrow(LIC), size = 180), ]
   SER_1 <- data.frame(
     SER = 2,
     ABR = 2,
@@ -72,18 +72,13 @@ mean(SER_LIC$SER)
 
 ## NP ----
 
-# Con muestreo aleatorio fuera LIC
-
-# Filtrar los datos para seleccionar solo los registros donde la columna "Figura" es igual a "LIC"
-NP <- filter(datos, datos$Figura == "NP")
-
 # Crear un nuevo dataframe donde se almacenarán los resultados
 SER_NP <-  data.frame(
   SER = numeric()
 )
 
-for (j in 1:30) {
-  rand_NP <- NP[sample(nrow(NP), size = 500), ]
+for (j in 1:20) {
+  rand_NP <- NP[sample(nrow(NP), size = 180), ]
   SER_1 <- data.frame(
     SER = 2,
     ABR = 2,
@@ -133,10 +128,6 @@ mean(SER_NP$SER)
 
 # CCAA ----
 ## LIC ----
-# Con muestreo aleatorio dentro LIC
-
-# Filtrar los datos para seleccionar solo los registros donde la columna "Figura" es igual a "LIC"
-LIC <- filter(datos, datos$Figura == "LIC")
 
 # Crear un nuevo dataframe donde se almacenarán los resultados
 SER_LIC <-  data.frame(
@@ -144,12 +135,12 @@ SER_LIC <-  data.frame(
   SER = numeric()
   )
 
-C <- unique(datos$CCAA)
+C <- unique(LIC$CCAA)
 
 for (i in 1:length(C)) {
   filtrados <- filter(LIC, LIC$CCAA == C[i])
-  for (j in 1:16){
-    rand_LIC <- filtrados[sample(nrow(filtrados), size = 193),]
+  for (j in 1:20){
+    rand_LIC <- filtrados[sample(nrow(filtrados), size = 180),]
     SER_1 <- data.frame(
       CCAA = "a",
       SER = 2,
@@ -212,23 +203,18 @@ writexl::write_xlsx(SER_LIC_CCAA , "A:/2dRUE_LIC/SER_LIC_CCAA.xlsx")
 
 ## NP ----
 
-# Con muestreo aleatorio fuera LIC
-
-# Filtrar los datos para seleccionar solo los registros donde la columna "Figura" es igual a "LIC"
-NP <- filter(datos, datos$Figura == "NP")
-
 # Crear un nuevo dataframe donde se almacenarán los resultados
 SER_NP <-  data.frame(
   CCAA = character(),
   SER = numeric()
 )
 
-C <- unique(datos$CCAA)
+C <- unique(NP$CCAA)
 
 for (i in 1:length(C)) {
   filtrados <- filter(NP, CCAA == C[i])
-  for (j in 1:16){
-    rand_NP <- filtrados[sample(nrow(filtrados), size = 193),]
+  for (j in 1:20){
+    rand_NP <- filtrados[sample(nrow(filtrados), size = 180),]
     SER_1 <- data.frame(
       CCAA = "a",
       SER = 2,
@@ -291,11 +277,7 @@ hist(SER_LIC$SER)
 writexl::write_xlsx(SER_NP_CCAA , "A:/2dRUE_LIC/SER_NP_CCAA.xlsx")
 
 # REGBIO ----
-## ZEC ----
-# Con muestreo aleatorio dentro ZEC
-
-# Filtrar los datos para seleccionar solo los registros donde la columna "Figura" es igual a "LIC"
-LIC <- filter(datos, datos$Figura == "LIC")
+## LIC ----
 
 # Crear un nuevo dataframe donde se almacenarán los resultados
 SER_LIC <-  data.frame(
@@ -303,12 +285,12 @@ SER_LIC <-  data.frame(
   SER = numeric()
 )
 
-REGBIO <- unique(datos$REGBIO)
+REGBIO <- unique(LIC$REGBIO)
 
 for (i in 1:length(REGBIO)) {
   filtrados <- filter(LIC, REGBIO == REGBIO[i])
-  for (j in 1:16){
-    rand_LIC <- filtrados[sample(nrow(filtrados), size = 193),]
+  for (j in 1:20){
+    rand_LIC <- filtrados[sample(nrow(filtrados), size = 180),]
     SER_1 <- data.frame(
       REGBIO = "a",
       SER = 2,
@@ -370,23 +352,18 @@ SER_LIC_REGBIO <- SER_LIC %>%
 writexl::write_xlsx(SER_LIC_CCAA , "A:/2dRUE_LIC/SER_LIC_CCAA.xlsx")
 ## NP ----
 
-# Con muestreo aleatorio fuera ZEC
-
-# Filtrar los datos para seleccionar solo los registros donde la columna "Figura" es igual a "LIC"
-NP <- filter(datos, datos$Figura == "NP")
-
 # Crear un nuevo dataframe donde se almacenarán los resultados
 SER_NP <-  data.frame(
   REGBIO = character(),
   SER = numeric()
 )
 
-REGBIO <- unique(datos$REGBIO)
+REGBIO <- unique(NP$REGBIO)
 
 for (i in 1:length(REGBIO)) {
   filtrados <- filter(NP, REGBIO == REGBIO[i])
-  for (j in 1:16){
-    rand_NP <- filtrados[sample(nrow(filtrados), size = 193),]
+  for (j in 1:20){
+    rand_NP <- filtrados[sample(nrow(filtrados), size = 180),]
     SER_1 <- data.frame(
       CCAA = "a",
       SER = 2,
