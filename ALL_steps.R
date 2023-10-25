@@ -5,11 +5,11 @@ library(reshape2)
 library(readxl)
 
 # CARGAR DATOS ----
-LIC <- read_delim("E:/LIC_2dRUE/LIC_RUE/LIC_RUE_AREA25_CCAA_RBIO_FOREST.txt", 
+LIC <- read_delim("E:/LIC_2dRUE/LIC_RUE/LIC_RUE_AREA25_CCAA_RBIO_FOREST_HFI.txt", 
                   delim = ";", escape_double = FALSE, locale = locale(decimal_mark = ","), 
                   trim_ws = TRUE)
 
-NP <- read_delim("E:/LIC_2dRUE/LIC_RUE/NO_RN2000_RUE_AREA25_CCAA_RBIO_FOREST.txt", 
+NP <- read_delim("E:/LIC_2dRUE/LIC_RUE/NO_RN2000_RUE_AREA25_CCAA_RBIO_FOREST_HFI.txt", 
                  delim = ";", escape_double = FALSE, locale = locale(decimal_mark = ","), 
                  trim_ws = TRUE)
 
@@ -28,7 +28,7 @@ LIC <- left_join(LIC, DEM_LIC, by = c("FID" = "FID"))
 
 NP <- left_join(NP, DEM_NP, by = c("FID" = "FID"))
 
-rm(DEM_LIC, DEM_NP,COMPLETITUD_LIC, COMPLETITUD_NP)
+rm(DEM_LIC, DEM_NP)
 
 # SELECCION LOTES I ----
 
@@ -329,7 +329,8 @@ n <- ((mean(AREA_CCAA$area_CCAA)*50)/100)/mean(AREA_LIC$area_LIC)
 SER_LIC <-  data.frame(
     SER = numeric(),
     ELEVATION = numeric(),
-    FOREST = numeric())
+    TCD = numeric(),
+    HFI = numeric())
 
 
 for (j in 1:1000) {
@@ -375,11 +376,13 @@ for (j in 1:1000) {
   
   SER_LIC_2 <- data.frame(SER = 2,
                           ELEVATION = 2,
-                          FOREST = 2)
+                          TCD = 2,
+                          HFI = 2)
   
   SER_LIC_2$SER <- SER_2
-  SER_LIC_2$ELEVATION <- mean(na.omit(rand_LIC$MEAN))
-  SER_LIC_2$FOREST <- mean(na.omit(rand_LIC$MEDIAN))
+  SER_LIC_2$ELEVATION <- mean(na.omit(rand_LIC$ELEVATION))
+  SER_LIC_2$TCD <- mean(na.omit(rand_LIC$TCD))
+  SER_LIC_2$HFI <- mean(na.omit(rand_LIC$HFI))
   SER_LIC <-  rbind(SER_LIC, SER_LIC_2)
   rm(porcentaje_por_valor, num_columnas, SR_b, SR_a, SER_1, SER_2, SER_LIC_2, rand_LIC)
 }
@@ -393,7 +396,8 @@ for (j in 1:1000) {
 SER_NP <-  data.frame(
   SER = numeric(),
   ELEVATION = numeric(),
-  FOREST = numeric())
+  TCD = numeric(),
+  HFI = numeric())
 
 
 for (j in 1:1000) {
@@ -442,17 +446,18 @@ for (j in 1:1000) {
                           FOREST = 2)
   
   SER_NP_2$SER <- SER_2
-  SER_NP_2$ELEVATION <- mean(na.omit(rand_NP$MEAN))
-  SER_NP_2$FOREST <- mean(na.omit(rand_NP$MEDIAN))
+  SER_NP_2$ELEVATION <- mean(na.omit(rand_NP$ELEVATION))
+  SER_NP_2$TCD <- mean(na.omit(rand_NP$TCD))
+  SER_NP_2$HFI <- mean(na.omit(rand_NP$HFI))
   SER_NP <-  rbind(SER_NP, SER_NP_2)
   rm(porcentaje_por_valor, num_columnas, SR_b, SR_a, SER_1, SER_2, SER_NP_2, rand_NP)
 }
 
   
 # COMPARACION SER ----
-kk <- as.data.frame(cbind("ID" = as.numeric(rownames(SER_LIC)), "LIC" = as.numeric(SER_LIC$SER), "NP" = SER_NP$SER))
+kk <- as.data.frame(cbind("ID" = as.numeric(rownames(SER_LIC)), "LIC" = as.numeric(SER_LIC$HFI), "NP" = SER_NP$HFI))
 
-kk2 <- SER_NP_CCAA[, c(1, 4)]
+
 kk2 <- melt(kk[, c(2, 3)])
 
 # Gráfico resultados
@@ -582,12 +587,13 @@ SER_LIC_CCAA <-  data.frame(
   CCAA = character(),
   SER = numeric(),
   ELEVATION = numeric(),
-  FOREST = numeric())
+  TCD = numeric(),
+  HFI = numeric())
 
 for (i in 1:length(C)) {
   filtrados <- filter(LIC, LIC$CCAA == C[i])
   for (j in 1:1000){
-    rand_LIC <- filtrados[sample(nrow(filtrados), size = 190),]
+    rand_LIC <- filtrados #[sample(nrow(filtrados), size = 190),]
     SER_1 <- data.frame(
       CCAA = "a",
       SER = 2,
@@ -632,18 +638,23 @@ for (i in 1:length(C)) {
       CCAA = "a",
       SER = 2,
       ELEVATION = 2,
-      FOREST = 2
+      TCD = 2,
+      HFI = 2
     )
     
     SER_LIC_2$CCAA <- C[i]
     SER_LIC_2$SER <- SER_2
-    SER_LIC_2$ELEVATION <- mean(na.omit(rand_LIC$MEAN))
-    SER_LIC_2$FOREST <- mean(na.omit(rand_LIC$MEDIAN))
+    SER_LIC_2$ELEVATION <- mean(na.omit(rand_LIC$ELEVATION))
+    SER_LIC_2$TCD <- mean(na.omit(rand_LIC$TCD))
+    SER_LIC_2$HFI <- mean(na.omit(rand_LIC$HFI))
+    
+    SER_LIC_2 <-  cbind( SER_LIC_2, SER_1)
     SER_LIC_CCAA <-  rbind(SER_LIC_CCAA, SER_LIC_2)
+    
   }
   
 }
-
+SER_LIC_CCAA <- SER_LIC_CCAA[, -c(6,7)]
 
 ## NP ----
 
@@ -653,12 +664,13 @@ SER_NP_CCAA <-  data.frame(
     CCAA = character(),
     SER = numeric(),
     ELEVATION = numeric(),
-    FOREST = numeric())
+    TCD = numeric(),
+    HFI = numeric())
   
   for (i in 1:length(C)) {
     filtrados <- filter(NP, NP$CCAA == C[i])
     for (j in 1:1000){
-      rand_NP <- filtrados[sample(nrow(filtrados), size = 190),]
+      rand_NP <- filtrados #[sample(nrow(filtrados), size = 190),]
       SER_1 <- data.frame(
         CCAA = "a",
         SER = 2,
@@ -703,18 +715,21 @@ SER_NP_CCAA <-  data.frame(
         CCAA = "a",
         SER = 2,
         ELEVATION = 2,
-        FOREST = 2
+        TCD = 2,
+        HFI = 2
       )
       
       SER_NP_2$CCAA <- C[i]
       SER_NP_2$SER <- SER_2
-      SER_NP_2$ELEVATION <- mean(na.omit(rand_NP$MEAN))
-      SER_NP_2$FOREST <- mean(na.omit(rand_NP$MEDIAN))
+      SER_NP_2$ELEVATION <- mean(na.omit(rand_NP$ELEVATION))
+      SER_NP_2$TCD <- mean(na.omit(rand_NP$TCD))
+      SER_NP_2$HFI <- mean(na.omit(rand_NP$HFI))
+      SER_NP_2 <-  cbind(SER_NP_2, SER_1)
       SER_NP_CCAA <-  rbind(SER_NP_CCAA, SER_NP_2)
     }
     
   }
-  
+SER_NP_CCAA <- SER_NP_CCAA[, -c(6,7)]
 
 
 ## COMPARACION SER CCAA ----
@@ -757,24 +772,29 @@ a <- SER_LIC_CCAA %>%
   group_by(CCAA = fct_inorder(CCAA)) %>%
   summarise(SER = mean(SER),
             elevacion = mean(ELEVATION), 
-            forest = mean(FOREST)) 
+            TCD = mean(TCD),
+            HFI = mean(HFI)) 
 # SER promedio NP por CCAA
 b <- SER_NP_CCAA %>%
   group_by(CCAA = fct_inorder(CCAA)) %>%
   summarise(SER = mean(SER),
             elevacion = mean(ELEVATION), 
-            forest = mean(FOREST))
+            TCD = mean(TCD),
+            HFI = mean(HFI))
 
 # Tablas resultados
-RESULT_CCAA <- cbind(a[,1], a[,2], b[,2], a[,3], b[,3], a[,4], b[,4])
-colnames(RESULT_CCAA) <- c("CCAA", "SER_LIC", "SER_NP", "ELEVATION_LIC", "ELEVATION_NP", "TDC_LIC", "TDC_NP")
+RESULT_CCAA <- cbind(a[,1], a[,2], b[,2], a[,3], b[,3], a[,4], b[,4], a[,5], b[,5])
+colnames(RESULT_CCAA) <- c("CCAA", "SER_LIC", "SER_NP", 
+                           "ELEVATION_LIC", "ELEVATION_NP", 
+                           "TDC_LIC", "TDC_NP",
+                           "HFI_LIC", "HFI_NP")
 
 writexl::write_xlsx(RESULT_CCAA, "E:/LIC_2dRUE/RESULT/RESULT_CCAA.xlsx")
 
-kk1 <- SER_LIC_CCAA[, c(1, 2)]
+kk1 <- SER_LIC_CCAA[, c(1, 3)]
 kk1 <- melt(kk1)
 
-kk2 <- SER_NP_CCAA[, c(1, 2)]
+kk2 <- SER_NP_CCAA[, c(1, 3)]
 kk2 <- melt(kk2)
 
 # Gráfico resultados
@@ -788,7 +808,7 @@ ggplot()+
                fill = "coral3", 
                colour = "coral3",
                alpha =.5)+
-  labs(y = "SER")+
+  labs(y = "Elevation")+
   theme(
     panel.background = element_rect(fill = "white",
                                     colour = "white",
@@ -819,7 +839,8 @@ SER_LIC_REGBIO <-  data.frame(
   REGBIO = character(),
   SER = numeric(),
   ELEVATION = numeric(),
-  FOREST = numeric())
+  TCD = numeric(),
+  HFI = numeric())
 
 for (i in 1:length(C)) {
   filtrados <- filter(LIC, LIC$REGBIO == C[i])
@@ -869,13 +890,15 @@ for (i in 1:length(C)) {
       REGBIO = "a",
       SER = 2,
       ELEVATION = 2,
-      FOREST = 2
+      TCD = 2,
+      HFI = 2
     )
     
     SER_LIC_2$REGBIO <- C[i]
     SER_LIC_2$SER <- SER_2
-    SER_LIC_2$ELEVATION <- mean(na.omit(rand_LIC$MEAN))
-    SER_LIC_2$FOREST <- mean(na.omit(rand_LIC$MEDIAN))
+    SER_LIC_2$ELEVATION <- mean(na.omit(rand_LIC$ELEVATION))
+    SER_LIC_2$TCD <- mean(na.omit(rand_LIC$TCD))
+    SER_LIC_2$HFI <- mean(na.omit(rand_LIC$HFI))
     SER_LIC_REGBIO <-  rbind(SER_LIC_REGBIO, SER_LIC_2)
   }
   
@@ -889,7 +912,8 @@ SER_NP_REGBIO <-  data.frame(
   REGBIO = character(),
   SER = numeric(),
   ELEVATION = numeric(),
-  FOREST = numeric())
+  TCD = numeric(),
+  HFI = numeric())
 
 for (i in 1:length(C)) {
   filtrados <- filter(NP, NP$REGBIO == C[i])
@@ -939,13 +963,15 @@ for (i in 1:length(C)) {
       REGBIO = "a",
       SER = 2,
       ELEVATION = 2,
-      FOREST = 2
+      TCD = 2,
+      HFI = 2
     )
     
     SER_NP_2$REGBIO <- C[i]
     SER_NP_2$SER <- SER_2
-    SER_NP_2$ELEVATION <- mean(na.omit(rand_NP$MEAN))
-    SER_NP_2$FOREST <- mean(na.omit(rand_NP$MEDIAN))
+    SER_NP_2$ELEVATION <- mean(na.omit(rand_NP$ELEVATION))
+    SER_NP_2$TCD <- mean(na.omit(rand_NP$TCD))
+    SER_NP_2$HFI <- mean(na.omit(rand_NP$HFI))
     SER_NP_REGBIO <-  rbind(SER_NP_REGBIO, SER_NP_2)
   }
 }
@@ -990,24 +1016,29 @@ a <- SER_LIC_REGBIO %>%
   group_by(REGBIO = fct_inorder(REGBIO)) %>%
   summarise(SER = mean(SER),
             elevacion = mean(ELEVATION), 
-            forest = mean(FOREST)) 
+            TCD = mean(TCD),
+            HFI = mean(HFI))
 # SER promedio NP por REGBIO
 b <- SER_NP_REGBIO %>%
   group_by(REGBIO = fct_inorder(REGBIO)) %>%
   summarise(SER = mean(SER),
             elevacion = mean(ELEVATION), 
-            forest = mean(FOREST))
+            TCD = mean(TCD),
+            HFI = mean(HFI))
 
 # Tablas resultados
-RESULT_REGBIO <- cbind(a[,1], a[,2], b[,2], a[,3], b[,3], a[,4], b[,4])
-colnames(RESULT_REGBIO) <- c("REGBIO", "SER_LIC", "SER_NP", "ELEVATION_LIC", "ELEVATION_NP", "TDC_LIC", "TDC_NP")
+RESULT_REGBIO <- cbind(a[,1], a[,2], b[,2], a[,3], b[,3], a[,4], b[,4], a[,5], b[,5])
+colnames(RESULT_REGBIO) <- c("REGBIO", "SER_LIC", "SER_NP", 
+                             "ELEVATION_LIC", "ELEVATION_NP", 
+                             "TDC_LIC", "TDC_NP", 
+                             "HFI_LIC", "HFI_NP")
 
 writexl::write_xlsx(RESULT_REGBIO, "E:/LIC_2dRUE/RESULT/RESULT_REGBIO.xlsx")
 
-kk1 <- SER_LIC_REGBIO[, c(1, 2)]
+kk1 <- SER_LIC_REGBIO[, c(1, 3)]
 kk1 <- melt(kk1)
 
-kk2 <- SER_NP_REGBIO[, c(1, 2)]
+kk2 <- SER_NP_REGBIO[, c(1, 3)]
 kk2 <- melt(kk2)
 
 # Gráfico resultados
@@ -1021,7 +1052,7 @@ ggplot()+
                fill = "coral3", 
                colour = "coral3",
                alpha =.5)+
-  labs(y = "SER")+
+  labs(y = "Elevation")+
   theme(
     panel.background = element_rect(fill = "white",
                                     colour = "white",
@@ -1037,3 +1068,170 @@ ggplot()+
     axis.title = element_text(family = "mono", angle = 90, size = 12)
   )
 
+# ALL LIC ----
+
+
+nombres <- unique(LIC$NOMBRE)
+
+SER_LIC <-  data.frame(
+  LIC = character(),
+  SER = numeric(),
+  ELEVATION = numeric(),
+  TCD = numeric(),
+  HFI = numeric())
+
+for (i in 1:length(nombres)) {
+    rand_NP <- filter(LIC, LIC$NOMBRE == nombres[i])
+    SER_1 <- data.frame(
+      LIC = "a",
+      SER = 2,
+      ABR = 2,
+      BAS = 2,
+      MDEG = 2,
+      DEG = 2,
+      PBB = 2,
+      PAB = 2,
+      SMAD = 2,
+      MAD = 2,
+      REF = 2,
+      AAR = 2
+    )
+    
+    # Calcular el porcentaje de cada valor en la columna 'gridcode'
+    porcentaje_por_valor <- prop.table(table(rand_NP$gridcode)) * 100
+    
+    # Obtener el número de columnas en porcentaje_por_valor
+    num_columnas <- length(porcentaje_por_valor)
+    
+    # Rellenar con ceros las columnas faltantes en SER_1
+    SER_1$ABR  <- ifelse(num_columnas >= 1, porcentaje_por_valor[1], 0)
+    SER_1$BAS  <- ifelse(num_columnas >= 2, porcentaje_por_valor[2], 0)
+    SER_1$MDEG <- ifelse(num_columnas >= 3, porcentaje_por_valor[3], 0)
+    SER_1$DEG  <- ifelse(num_columnas >= 4, porcentaje_por_valor[4], 0)
+    SER_1$PBB  <- ifelse(num_columnas >= 5, porcentaje_por_valor[5], 0)
+    SER_1$PAB  <- ifelse(num_columnas >= 6, porcentaje_por_valor[6], 0)
+    SER_1$SMAD <- ifelse(num_columnas >= 7, porcentaje_por_valor[7], 0)
+    SER_1$MAD  <- ifelse(num_columnas >= 8, porcentaje_por_valor[8], 0)
+    SER_1$REF  <- ifelse(num_columnas >= 9, porcentaje_por_valor[9], 0)
+    SER_1$AAR  <- ifelse(num_columnas >= 10, porcentaje_por_valor[10], 0)
+    
+    # Calcular los valores de SR_b y SR_a
+    SR_b <- sum(replace(porcentaje_por_valor[6:10], is.na(porcentaje_por_valor[6:10]), 0))
+    SR_a <- sum(replace(porcentaje_por_valor[3:5], is.na(porcentaje_por_valor[3:5]), 0))
+    
+    # Obtener el índice SER
+    SER_2 <- (SR_b - SR_a) / (SR_b + SR_a)
+    
+    SER_LIC_2 <- data.frame(
+      LIC = "a",
+      CCAA = "a",
+      REGBIO = "a",
+      SER = 2,
+      ELEVATION = 2,
+      TCD = 2,
+      HFI = 2
+    )
+    
+    SER_LIC_2$LIC<- nombres[i]
+    SER_LIC_2$CCAA<- rand_NP[1, 9]
+    SER_LIC_2$REGBIO<- rand_NP[1, 10]
+    SER_LIC_2$SER <- SER_2
+    SER_LIC_2$ELEVATION <- mean(na.omit(rand_NP$ELEVATION))
+    SER_LIC_2$TCD <- mean(na.omit(rand_NP$TCD))
+    SER_LIC_2$HFI <- mean(na.omit(rand_NP$HFI))
+    SER_LIC_2 <-  cbind( SER_LIC_2, SER_1)
+    SER_LIC <-  rbind(SER_LIC, SER_LIC_2)
+}
+
+SER_LIC <- SER_LIC[, -c(8,9)]
+
+SER_LIC <- na.omit(SER_LIC)
+SER_LIC_F <- filter(SER_LIC, SER_LIC$SER == NA)
+
+max(SER_LIC_F$PAB)
+
+writexl::write_xlsx(SER_LIC, "E:/LIC_2dRUE/RESULT/SER_LIC.xlsx")
+
+
+modelo <- lm(SER ~ scale(ELEVATION) + scale(TCD) + scale(HFI) ,data = SER_LIC)
+modelo <- lm(SER ~ ELEVATION + TCD + HFI ,data = SER_LIC)
+summary(modelo)
+
+library(corrplot)
+library(RColorBrewer)
+M <-cor(SER_LIC[,2:5])
+corrplot(M, type="upper", method="number")
+
+
+LIC <- read_delim("E:/LIC_2dRUE/LIC_RUE/LIC_RUE_AREA25_CCAA_RBIO_FOREST_HFI_PCP_TMED.txt", 
+                  delim = ";", escape_double = FALSE, locale = locale(decimal_mark = ","), 
+                  trim_ws = TRUE)
+colnames(LIC) <- c("FID", "NOMBRE", "AREA", "PERIMETER", "SER", "ELEVATION","TCD","HFI", "PCP", "TMED")
+
+M <-cor(LIC[,3:10])
+corrplot(M, type="upper", method="number")
+
+library(MuMIn)
+options(na.action = "na.fail")
+fm1 <- lm(SER ~  TCD  + AREA  + PCP+ TMED, data = LIC)
+
+summary(fm1)
+dd <- dredge(fm1, extra = list(
+  "R^2", "*" = function(x) {
+    s <- summary(x)
+    c(Rsq = s$r.squared, adjRsq = s$adj.r.squared,
+      F = s$fstatistic[[1]])
+  }))
+aa <- subset(dd, delta < 4)
+
+
+fm1 <- lm(SER ~ ELEVATION + TCD +  AREA +  PCP + HFI+ PERIMETRO+TMED, data = LIC)
+writexl::write_xlsx(aa, "E:/LIC_2dRUE/RESULT/modelos_SER_LIC.xlsx")
+
+
+LIC <- read_delim("E:/LIC_2dRUE/LIC_RUE/LIC_RUE_CCAA.txt", 
+                  delim = ";", escape_double = FALSE, locale = locale(decimal_mark = ","), 
+                  trim_ws = TRUE)
+SER_LIC %>% 
+  group_by(SER_LIC$CCAA) %>% 
+  summarise(SER = mean(SER))
+
+SER_LIC_CCAA %>% 
+  group_by(SER_LIC_CCAA$CCAA) %>% 
+  summarise(SER = mean(SER))
+
+kk <- SER_NP_CCAA[,c(1, 6:15)]
+kk <- reshape2::melt(kk)
+
+ggplot(kk, aes(x= variable, y = value, group = CCAA, col = CCAA))+
+  geom_point(size = 2, alpha =.5)+
+  geom_line()+
+  facet_wrap(~CCAA, ncol=3)+
+  theme(strip.background = element_blank(),
+        strip.text = element_blank(),
+        panel.background = element_rect(fill = "white",
+                                        colour = "white",
+                                        size = 0.5, linetype = "solid"),
+        panel.grid.major.y = element_line(size = 0.1, linetype = 'dashed',
+                                          colour = alpha("gray60",0.5)),
+        panel.grid.major.x = element_line(size = 0.1, linetype = 'solid',
+                                          colour = "gray60"),
+        axis.ticks = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.x = element_text(family = "mono", angle = 45, size = 10, hjust = 1),
+        axis.text.y = element_text(family = "mono", size = 10),
+        axis.title = element_text(family = "mono", angle = 90, size = 12))
+  
+ggplot(data=kk, aes(x=variable, y=value, col = CCAA))+
+  geom_bar(stat='identity', col = CCAA)
+
+
+ggplot(kk, aes(varia, colour=variable, group=CCAA)) + 
+  geom_density()
+
+hist(kk$value)
+ggplot(kk, aes(x= value, col= variable))+
+geom_bar(fill = CCAA)
+
+ggplot(mtcars, aes(x = cyl)) + geom_density(aes(color = "red"))
+aa <- mtcars
