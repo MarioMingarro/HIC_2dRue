@@ -5,20 +5,20 @@ library(reshape2)
 library(readxl)
 
 # CARGAR DATOS ----
-LIC <- read_delim("E:/LIC_2dRUE/LIC_RUE/LIC_RUE_AREA25_CCAA_RBIO_FOREST_HFI.txt", 
+LIC <- read_delim("D:/LIC_2dRUE/LIC_RUE/LIC_RUE_AREA25_CCAA_RBIO_FOREST_HFI.txt", 
                   delim = ";", escape_double = FALSE, locale = locale(decimal_mark = ","), 
                   trim_ws = TRUE)
 
-NP <- read_delim("E:/LIC_2dRUE/LIC_RUE/NO_RN2000_RUE_AREA25_CCAA_RBIO_FOREST_HFI.txt", 
+NP <- read_delim("D:/LIC_2dRUE/LIC_RUE/NO_RN2000_RUE_AREA25_CCAA_RBIO_FOREST_HFI.txt", 
                  delim = ";", escape_double = FALSE, locale = locale(decimal_mark = ","), 
                  trim_ws = TRUE)
 
-DEM_LIC <- read_delim("E:/LIC_2dRUE/DEM/DEM_LIC_2dRUE.txt", 
+DEM_LIC <- read_delim("D:/LIC_2dRUE/DEM/DEM_LIC_2dRUE.txt", 
            delim = ";", escape_double = FALSE, col_types = cols(Rowid_ = col_skip()), 
            locale = locale(decimal_mark = ","), 
            trim_ws = TRUE)
 
-DEM_NP <- read_delim("E:/LIC_2dRUE/DEM/DEM_NO_RN2000_2dRUE.txt", 
+DEM_NP <- read_delim("D:/LIC_2dRUE/DEM/DEM_NO_RN2000_2dRUE.txt", 
                      delim = ";", escape_double = FALSE, col_types = cols(Rowid_ = col_skip()), 
                      locale = locale(decimal_mark = ","), 
                      trim_ws = TRUE)
@@ -608,8 +608,13 @@ SER_LIC_CCAA <-  data.frame(
 
 for (i in 1:length(C)) {
   filtrados <- filter(LIC, LIC$CCAA == C[i])
+<<<<<<< HEAD
   for (j in 1:1000){
     rand_LIC <- filtrados[sample(nrow(filtrados), size = 190),]
+=======
+  for (j in 1:1){
+    rand_LIC <- filtrados #[sample(nrow(filtrados), size = 190),]
+>>>>>>> 944b73dcc5d30528e6275392b659929e73ea69a5
     SER_1 <- data.frame(
       CCAA = "a",
       SER = 2,
@@ -687,7 +692,7 @@ SER_NP_CCAA <-  data.frame(
   
   for (i in 1:length(C)) {
     filtrados <- filter(NP, NP$CCAA == C[i])
-    for (j in 1:1000){
+    for (j in 1:1){
       rand_NP <- filtrados #[sample(nrow(filtrados), size = 190),]
       SER_1 <- data.frame(
         CCAA = "a",
@@ -1186,7 +1191,7 @@ corrplot(cor_LIC, type="upper", order="hclust",
 
 max(SER_LIC_F$PAB)
 
-writexl::write_xlsx(SER_LIC, "E:/LIC_2dRUE/RESULT/SER_LIC.xlsx")
+writexl::write_xlsx(SER_LIC, "D:/LIC_2dRUE/RESULT/SER_LIC_ALL.xlsx")
 
 
 modelo <- lm(SER ~ scale(ELEVATION) + scale(TCD) + scale(HFI) ,data = SER_LIC)
@@ -1236,13 +1241,19 @@ SER_LIC_CCAA %>%
   group_by(SER_LIC_CCAA$CCAA) %>% 
   summarise(SER = mean(SER))
 
-kk <- SER_NP_CCAA[,c(1, 6:15)]
-kk <- reshape2::melt(kk)
+LIC_CCAA <- SER_LIC_CCAA[,c(1, 6:15)]
+NP_CCAA <- SER_NP_CCAA[,c(1, 6:15)]
+LIC_CCAA <- reshape2::melt(LIC_CCAA)
+NP_CCAA <- reshape2::melt(NP_CCAA)
 
-ggplot(kk, aes(x= variable, y = value, group = CCAA, col = CCAA))+
-  geom_point(size = 2, alpha =.5)+
-  geom_line()+
+ggplot()+
+  geom_point(data= LIC_CCAA, aes(x= variable, y = value, group = CCAA, col = CCAA), size = 2, alpha =.5)+
+  geom_line(data= LIC_CCAA, aes(x= variable, y = value, group = CCAA, col = CCAA))+
+  geom_point(data= NP_CCAA, aes(x= variable, y = value, group = CCAA), size = 2, alpha =.3)+
+  geom_line(data= NP_CCAA, aes(x= variable, y = value, group = CCAA), alpha =.3)+
   facet_wrap(~CCAA, ncol=3)+
+  geom_vline(xintercept = 5, col = "red", alpha = .5, t)+
+  labs(y = "%")+
   theme(strip.background = element_blank(),
         strip.text = element_blank(),
         panel.background = element_rect(fill = "white",
@@ -1258,16 +1269,30 @@ ggplot(kk, aes(x= variable, y = value, group = CCAA, col = CCAA))+
         axis.text.y = element_text(family = "mono", size = 10),
         axis.title = element_text(family = "mono", angle = 90, size = 12))
   
-ggplot(data=kk, aes(x=variable, y=value, col = CCAA))+
-  geom_bar(stat='identity', col = CCAA)
+LIC_CCAA <- as.data.frame(t(SER_LIC_CCAA[,c(1, 6:15)]))
+colnames(LIC_CCAA) <- LIC_CCAA[1,]
+LIC_CCAA <- LIC_CCAA[-1,]
+NP_CCAA <- as.data.frame(t(SER_NP_CCAA[,c(1, 6:15)]))
+colnames(NP_CCAA) <- NP_CCAA[1,]
+NP_CCAA <- NP_CCAA[-1,]
 
+kk <- as.data.frame(cbind(  "LIC" = LIC_CCAA[,15], "NP" =  NP_CCAA[,15]))
+rownames(kk) <- rownames(LIC_CCAA)
+kk <-  transform(kk, LIC = as.numeric(LIC),
+                 NP = as.numeric(NP))
 
-ggplot(kk, aes(varia, colour=variable, group=CCAA)) + 
-  geom_density()
+library(ggmosaic)
+kk <- as.data.frame(cbind(  "LIC" = LIC_CCAA[,15], "NP" =  NP_CCAA[,15]))
+ggplot()+
+  geom_mosaic(data= kk, aes(x = product(kk$LIC, kk$NP)), show.legend = FALSE)
 
-hist(kk$value)
-ggplot(kk, aes(x= value, col= variable))+
-geom_bar(fill = CCAA)
+mosaicplot(kk)
+kk <-  transform(kk, LIC = as.numeric(LIC),
+                 NP = as.numeric(NP))
+chisq.test(kk$LIC, kk$NP)
 
-ggplot(mtcars, aes(x = cyl)) + geom_density(aes(color = "red"))
-aa <- mtcars
+library(ggmosaic)#https://journal.r-project.org/articles/RJ-2023-013/
+ggplot(data = flights) + 
+  geom_mosaic(aes(x = product(do_you_recline, rude_to_recline), 
+                  fill = do_you_recline),
+              divider = c("vspine", "hbar"))
