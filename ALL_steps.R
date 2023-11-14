@@ -23,13 +23,28 @@ DEM_NP <- read_delim("E:/LIC_2dRUE/DEM/DEM_NO_RN2000_2dRUE.txt",
                      locale = locale(decimal_mark = ","), 
                      trim_ws = TRUE)
 
+AISLAMIENTO <- readxl::read_xlsx("E:/LIC_2dRUE/AISLAMIENTO/expansionIndex.xlsx")
 
 LIC <- left_join(LIC, DEM_LIC, by = c("FID" = "FID"))
 
+LIC <- left_join(LIC, AISLAMIENTO, by = c("NOMBRE" = "Name"))
+LIC <- rename(LIC, "AIS" = "expansionIndexNorm")
 NP <- left_join(NP, DEM_NP, by = c("FID" = "FID"))
+
+
+LIC <- filter(LIC, LIC$NOMBRE %in% unique(AISLAMIENTO$Name))
 
 rm(DEM_LIC, DEM_NP)
 
+
+nombres_LIC <- as.data.frame(unique(LIC$NOMBRE)) 
+nombres_LIC <- mutate(nombres_LIC, LIC=rep(1, nrow(nombres_LIC)))
+nombres_AIS <- as.data.frame(unique(AISLAMIENTO$Name))
+nombres_AIS <- mutate(nombres_AIS, AIS=rep(1, nrow(nombres_AIS)))
+colnames(nombres_LIC) <- c("nombre", "LIC")
+colnames(nombres_AIS) <- c("nombre", "AIS")
+kk <- left_join(nombres_LIC,nombres_AIS)
+sum(is.na(kk$AIS)) 
 # SELECCION LOTES I ----
 
 ## ESTABILIZACION SER ----
@@ -588,12 +603,13 @@ SER_LIC_CCAA <-  data.frame(
   SER = numeric(),
   ELEVATION = numeric(),
   TCD = numeric(),
-  HFI = numeric())
+  HFI = numeric(),
+  AIS = numeric())
 
 for (i in 1:length(C)) {
   filtrados <- filter(LIC, LIC$CCAA == C[i])
   for (j in 1:1000){
-    rand_LIC <- filtrados #[sample(nrow(filtrados), size = 190),]
+    rand_LIC <- filtrados[sample(nrow(filtrados), size = 190),]
     SER_1 <- data.frame(
       CCAA = "a",
       SER = 2,
@@ -639,14 +655,16 @@ for (i in 1:length(C)) {
       SER = 2,
       ELEVATION = 2,
       TCD = 2,
-      HFI = 2
+      HFI = 2,
+      AIS = 2
     )
     
     SER_LIC_2$CCAA <- C[i]
     SER_LIC_2$SER <- SER_2
-    SER_LIC_2$ELEVATION <- mean(na.omit(rand_LIC$ELEVATION))
-    SER_LIC_2$TCD <- mean(na.omit(rand_LIC$TCD))
-    SER_LIC_2$HFI <- mean(na.omit(rand_LIC$HFI))
+    SER_LIC_2$ELEVATION <- median(na.omit(rand_LIC$ELEVATION))
+    SER_LIC_2$TCD <- median(na.omit(rand_LIC$TCD))
+    SER_LIC_2$HFI <- median(na.omit(rand_LIC$HFI))
+    SER_LIC_2$AIS <- median(na.omit(rand_LIC$AIS))
     
     SER_LIC_2 <-  cbind( SER_LIC_2, SER_1)
     SER_LIC_CCAA <-  rbind(SER_LIC_CCAA, SER_LIC_2)
@@ -772,8 +790,9 @@ a <- SER_LIC_CCAA %>%
   group_by(CCAA = fct_inorder(CCAA)) %>%
   summarise(SER = mean(SER),
             elevacion = mean(ELEVATION), 
-            TCD = mean(TCD),
-            HFI = mean(HFI)) 
+            TCD = median(TCD),
+            HFI = median(HFI),
+            AIS = median(AIS)) 
 # SER promedio NP por CCAA
 b <- SER_NP_CCAA %>%
   group_by(CCAA = fct_inorder(CCAA)) %>%
@@ -824,8 +843,13 @@ ggplot()+
     axis.title = element_text(family = "mono", angle = 90, size = 12)
   )
 
-
-
+# Correlaciones
+library(corrplot)
+library(RColorBrewer)
+cor_LIC <- SER_LIC_CCAA[,2:6]
+cor_LIC <- cor(cor_LIC)
+corrplot(cor_LIC, type="upper", order="hclust",
+         col=brewer.pal(n=8, name="RdYlBu"))
 # REGBIO ----
 ## LIC ----
 
@@ -1078,10 +1102,11 @@ SER_LIC <-  data.frame(
   SER = numeric(),
   ELEVATION = numeric(),
   TCD = numeric(),
-  HFI = numeric())
+  HFI = numeric(),
+  AIS = numeric())
 
 for (i in 1:length(nombres)) {
-    rand_NP <- filter(LIC, LIC$NOMBRE == nombres[i])
+    rand_LIC <- filter(LIC, LIC$NOMBRE == nombres[i])
     SER_1 <- data.frame(
       LIC = "a",
       SER = 2,
@@ -1098,7 +1123,7 @@ for (i in 1:length(nombres)) {
     )
     
     # Calcular el porcentaje de cada valor en la columna 'gridcode'
-    porcentaje_por_valor <- prop.table(table(rand_NP$gridcode)) * 100
+    porcentaje_por_valor <- prop.table(table(rand_LIC$gridcode)) * 100
     
     # Obtener el número de columnas en porcentaje_por_valor
     num_columnas <- length(porcentaje_por_valor)
@@ -1129,24 +1154,35 @@ for (i in 1:length(nombres)) {
       SER = 2,
       ELEVATION = 2,
       TCD = 2,
-      HFI = 2
+      HFI = 2,
+      AIS = 2
     )
     
     SER_LIC_2$LIC<- nombres[i]
-    SER_LIC_2$CCAA<- rand_NP[1, 9]
-    SER_LIC_2$REGBIO<- rand_NP[1, 10]
+    SER_LIC_2$CCAA<- rand_LIC[1, 9]
+    SER_LIC_2$REGBIO<- rand_LIC[1, 10]
     SER_LIC_2$SER <- SER_2
-    SER_LIC_2$ELEVATION <- mean(na.omit(rand_NP$ELEVATION))
-    SER_LIC_2$TCD <- mean(na.omit(rand_NP$TCD))
-    SER_LIC_2$HFI <- mean(na.omit(rand_NP$HFI))
+    SER_LIC_2$ELEVATION <- mean(na.omit(rand_LIC$ELEVATION))
+    SER_LIC_2$TCD <- median(na.omit(rand_LIC$TCD))
+    SER_LIC_2$HFI <- median(na.omit(rand_LIC$HFI))
+    SER_LIC_2$HFI <- median(na.omit(rand_LIC$AIS))
     SER_LIC_2 <-  cbind( SER_LIC_2, SER_1)
     SER_LIC <-  rbind(SER_LIC, SER_LIC_2)
 }
 
-SER_LIC <- SER_LIC[, -c(8,9)]
+SER_LIC <- SER_LIC[, -c(9,10)]
 
 SER_LIC <- na.omit(SER_LIC)
 SER_LIC_F <- filter(SER_LIC, SER_LIC$SER == NA)
+
+# Correlaciones
+sum(is.na(SER_LIC)) 
+library(corrplot)
+library(RColorBrewer)
+cor_LIC <- SER_LIC[,4:8]
+cor_LIC <- cor(cor_LIC)
+corrplot(cor_LIC, type="upper", order="hclust",
+         col=brewer.pal(n=8, name="RdYlBu"))
 
 max(SER_LIC_F$PAB)
 
