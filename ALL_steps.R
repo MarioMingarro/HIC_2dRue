@@ -23,7 +23,7 @@ DEM_NP <- read_delim("D:/LIC_2dRUE/DEM/DEM_NO_RN2000_2dRUE.txt",
                      locale = locale(decimal_mark = ","), 
                      trim_ws = TRUE)
 
-AISLAMIENTO <- readxl::read_xlsx("E:/LIC_2dRUE/AISLAMIENTO/expansionIndex.xlsx")
+AISLAMIENTO <- readxl::read_xlsx("D:/LIC_2dRUE/AISLAMIENTO/expansionIndex.xlsx")
 
 LIC <- left_join(LIC, DEM_LIC, by = c("FID" = "FID"))
 
@@ -44,7 +44,8 @@ nombres_AIS <- mutate(nombres_AIS, AIS=rep(1, nrow(nombres_AIS)))
 colnames(nombres_LIC) <- c("nombre", "LIC")
 colnames(nombres_AIS) <- c("nombre", "AIS")
 kk <- left_join(nombres_LIC,nombres_AIS)
-sum(is.na(kk$AIS)) 
+sum(is.na(kk$AIS))
+
 # SELECCION LOTES I ----
 
 ## ESTABILIZACION SER ----
@@ -395,9 +396,9 @@ for (j in 1:1000) {
                           HFI = 2)
   
   SER_LIC_2$SER <- SER_2
-  SER_LIC_2$ELEVATION <- mean(na.omit(rand_LIC$ELEVATION))
-  SER_LIC_2$TCD <- mean(na.omit(rand_LIC$TCD))
-  SER_LIC_2$HFI <- mean(na.omit(rand_LIC$HFI))
+  SER_LIC_2$ELEVATION <- median(na.omit(rand_LIC$ELEVATION))
+  SER_LIC_2$TCD <- median(na.omit(rand_LIC$TCD))
+  SER_LIC_2$HFI <- median(na.omit(rand_LIC$HFI))
   SER_LIC <-  rbind(SER_LIC, SER_LIC_2)
   rm(porcentaje_por_valor, num_columnas, SR_b, SR_a, SER_1, SER_2, SER_LIC_2, rand_LIC)
 }
@@ -461,9 +462,9 @@ for (j in 1:1000) {
                           FOREST = 2)
   
   SER_NP_2$SER <- SER_2
-  SER_NP_2$ELEVATION <- mean(na.omit(rand_NP$ELEVATION))
-  SER_NP_2$TCD <- mean(na.omit(rand_NP$TCD))
-  SER_NP_2$HFI <- mean(na.omit(rand_NP$HFI))
+  SER_NP_2$ELEVATION <- median(na.omit(rand_NP$ELEVATION))
+  SER_NP_2$TCD <- median(na.omit(rand_NP$TCD))
+  SER_NP_2$HFI <- median(na.omit(rand_NP$HFI))
   SER_NP <-  rbind(SER_NP, SER_NP_2)
   rm(porcentaje_por_valor, num_columnas, SR_b, SR_a, SER_1, SER_2, SER_NP_2, rand_NP)
 }
@@ -608,13 +609,8 @@ SER_LIC_CCAA <-  data.frame(
 
 for (i in 1:length(C)) {
   filtrados <- filter(LIC, LIC$CCAA == C[i])
-<<<<<<< HEAD
   for (j in 1:1000){
     rand_LIC <- filtrados[sample(nrow(filtrados), size = 190),]
-=======
-  for (j in 1:1){
-    rand_LIC <- filtrados #[sample(nrow(filtrados), size = 190),]
->>>>>>> 944b73dcc5d30528e6275392b659929e73ea69a5
     SER_1 <- data.frame(
       CCAA = "a",
       SER = 2,
@@ -677,7 +673,7 @@ for (i in 1:length(C)) {
   }
   
 }
-SER_LIC_CCAA <- SER_LIC_CCAA[, -c(6,7)]
+SER_LIC_CCAA <- SER_LIC_CCAA[, -c(7,8)]
 
 ## NP ----
 
@@ -752,7 +748,7 @@ SER_NP_CCAA <-  data.frame(
     }
     
   }
-SER_NP_CCAA <- SER_NP_CCAA[, -c(6,7)]
+SER_NP_CCAA_ALL <- SER_NP_CCAA[, -c(6,7)]
 
 
 ## COMPARACION SER CCAA ----
@@ -815,10 +811,10 @@ colnames(RESULT_CCAA) <- c("CCAA", "SER_LIC", "SER_NP",
 
 writexl::write_xlsx(RESULT_CCAA, "E:/LIC_2dRUE/RESULT/RESULT_CCAA.xlsx")
 
-kk1 <- SER_LIC_CCAA[, c(1, 3)]
+kk1 <- SER_LIC_CCAA_ALL[, c(1, 3)]
 kk1 <- melt(kk1)
 
-kk2 <- SER_NP_CCAA[, c(1, 3)]
+kk2 <- SER_NP_CCAA_ALL[, c(1, 3)]
 kk2 <- melt(kk2)
 
 # Gráfico resultados
@@ -873,8 +869,8 @@ SER_LIC_REGBIO <-  data.frame(
 
 for (i in 1:length(C)) {
   filtrados <- filter(LIC, LIC$REGBIO == C[i])
-  for (j in 1:1000){
-    rand_LIC <- filtrados[sample(nrow(filtrados), size = 190),]
+  for (j in 1){
+    rand_LIC <- filtrados#[sample(nrow(filtrados), size = 190),]
     SER_1 <- data.frame(
       REGBIO = "a",
       SER = 2,
@@ -925,9 +921,11 @@ for (i in 1:length(C)) {
     
     SER_LIC_2$REGBIO <- C[i]
     SER_LIC_2$SER <- SER_2
-    SER_LIC_2$ELEVATION <- mean(na.omit(rand_LIC$ELEVATION))
-    SER_LIC_2$TCD <- mean(na.omit(rand_LIC$TCD))
-    SER_LIC_2$HFI <- mean(na.omit(rand_LIC$HFI))
+    SER_LIC_2$ELEVATION <- median(na.omit(rand_LIC$ELEVATION))
+    SER_LIC_2$TCD <- median(na.omit(rand_LIC$TCD))
+    SER_LIC_2$HFI <- median(na.omit(rand_LIC$HFI))
+    
+    SER_LIC_2 <-  cbind(SER_LIC_2, SER_1)
     SER_LIC_REGBIO <-  rbind(SER_LIC_REGBIO, SER_LIC_2)
   }
   
@@ -998,9 +996,11 @@ for (i in 1:length(C)) {
     
     SER_NP_2$REGBIO <- C[i]
     SER_NP_2$SER <- SER_2
-    SER_NP_2$ELEVATION <- mean(na.omit(rand_NP$ELEVATION))
-    SER_NP_2$TCD <- mean(na.omit(rand_NP$TCD))
-    SER_NP_2$HFI <- mean(na.omit(rand_NP$HFI))
+    SER_NP_2$ELEVATION <- median(na.omit(rand_NP$ELEVATION))
+    SER_NP_2$TCD <- median(na.omit(rand_NP$TCD))
+    SER_NP_2$HFI <- median(na.omit(rand_NP$HFI))
+    
+    SER_NP_2 <-  cbind(SER_NP_2, SER_1)
     SER_NP_REGBIO <-  rbind(SER_NP_REGBIO, SER_NP_2)
   }
 }
@@ -1167,7 +1167,7 @@ for (i in 1:length(nombres)) {
     SER_LIC_2$CCAA<- rand_LIC[1, 9]
     SER_LIC_2$REGBIO<- rand_LIC[1, 10]
     SER_LIC_2$SER <- SER_2
-    SER_LIC_2$ELEVATION <- mean(na.omit(rand_LIC$ELEVATION))
+    SER_LIC_2$ELEVATION <- median(na.omit(rand_LIC$ELEVATION))
     SER_LIC_2$TCD <- median(na.omit(rand_LIC$TCD))
     SER_LIC_2$HFI <- median(na.omit(rand_LIC$HFI))
     SER_LIC_2$HFI <- median(na.omit(rand_LIC$AIS))
@@ -1179,6 +1179,160 @@ SER_LIC <- SER_LIC[, -c(9,10)]
 
 SER_LIC <- na.omit(SER_LIC)
 SER_LIC_F <- filter(SER_LIC, SER_LIC$SER == NA)
+
+# Density plot 2dRUE class --------
+## CCAA----
+LIC_CCAA <- SER_LIC_CCAA_ALL[,c(1, 7:16)]
+NP_CCAA <- SER_NP_CCAA_ALL[,c(1, 6:15)]
+LIC_CCAA <- reshape2::melt(LIC_CCAA)
+NP_CCAA <- reshape2::melt(NP_CCAA)
+
+ggplot()+
+  geom_point(data= LIC_CCAA, aes(x= variable, y = value, group = CCAA), col = "aquamarine3", size = 2, alpha =.5)+
+  geom_line(data= LIC_CCAA, aes(x= variable, y = value, group = CCAA), col = "aquamarine3", alpha =.5)+
+  geom_point(data= NP_CCAA, aes(x= variable, y = value, group = CCAA), col = "coral3", size = 2, alpha =.5)+
+  geom_line(data= NP_CCAA, aes(x= variable, y = value, group = CCAA), col = "coral3", alpha =.5)+
+  facet_wrap(~CCAA, ncol=3)+
+  geom_vline(xintercept = 5, col = "red", alpha = .5, t)+
+  labs(y = "%")+
+  theme(strip.background = element_blank(),
+        panel.background = element_rect(fill = "white",
+                                        colour = "white",
+                                        size = 0.5, linetype = "solid"),
+        legend.position = "none",
+        panel.grid.major.y = element_line(size = 0.1, linetype = 'dashed',
+                                          colour = alpha("gray60",0.5)),
+        panel.grid.major.x = element_line(size = 0.1, linetype = 'solid',
+                                          colour = "gray60"),
+        axis.ticks = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.x = element_text(family = "mono", angle = 45, size = 10, hjust = 1),
+        axis.text.y = element_text(family = "mono", size = 10),
+        axis.title = element_text(family = "mono", angle = 90, size = 12),
+        strip.text = element_text(family = "mono", size = 10))
+
+## REGBIO----
+LIC_REGBIO <- SER_LIC_REGBIO[,c(1, 8:17)]
+LIC_REGBIO[,1] <- c("Atlantic", "Alpine", "Mediterranean")
+NP_REGBIO <- SER_NP_REGBIO[,c(1, 8:17)]
+NP_REGBIO[,1] <- c("Atlantic", "Alpine", "Mediterranean")
+LIC_REGBIO <- reshape2::melt(LIC_REGBIO)
+NP_REGBIO <- reshape2::melt(NP_REGBIO)
+
+ggplot()+
+  geom_point(data= LIC_REGBIO, aes(x= variable, y = value, group = REGBIO), col = "aquamarine3", size = 2, alpha =.5)+
+  geom_line(data= LIC_REGBIO, aes(x= variable, y = value, group = REGBIO), col = "aquamarine3", alpha =.5)+
+  geom_point(data= NP_REGBIO, aes(x= variable, y = value, group = REGBIO), col = "coral3", size = 2, alpha =.5)+
+  geom_line(data= NP_REGBIO, aes(x= variable, y = value, group = REGBIO), col = "coral3", alpha =.5)+
+  facet_wrap(~REGBIO, nrow = 3)+
+  geom_vline(xintercept = 5, col = "red", alpha = .5, t)+
+  labs(y = "%")+
+  theme(strip.background = element_blank(),
+        panel.background = element_rect(fill = "white",
+                                        colour = "white",
+                                        size = 0.5, linetype = "solid"),
+        legend.position = "none",
+        panel.grid.major.y = element_line(size = 0.1, linetype = 'dashed',
+                                          colour = "gray60"),
+        panel.grid.major.x = element_line(size = 0.1, linetype = 'solid',
+                                          colour = "gray60"),
+        axis.ticks = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.x = element_text(family = "mono", angle = 45, size = 10, hjust = 1),
+        axis.text.y = element_text(family = "mono", size = 10),
+        axis.title = element_text(family = "mono", angle = 90, size = 12),
+        strip.text = element_text(family = "mono", size = 10))
+
+# Distancias ----
+## CCAA----
+library(emdist)
+distancias <- data.frame(
+  CCAA = character(),
+  DISTANCES = numeric())
+
+for(i in 1:length(C)){
+  kk <- data.frame(
+    CCAA = "a",
+    DISTANCES = 1)
+  a <- filter(LIC_CCAA, LIC_ == C[i])
+  b <- filter(NP_CCAA, NP_CCAA$CCAA == C[i])
+  a <- as.matrix(a[,c(2:11)])
+  b <- as.matrix(b[,c(2:11)])
+  kk$CCAA <- C[i]
+  kk$DISTANCES <- emd2d(a, b, xdist = 1, ydist = 1, dist="euclidean")
+  distancias <- rbind(distancias, kk)
+}
+
+
+
+## REGBIO----
+LIC_REGBIO <- SER_LIC_REGBIO[,c(1, 8:17)]
+NP_REGBIO <- SER_NP_REGBIO[,c(1, 8:17)]
+
+
+distancias <- data.frame(
+  REGBIO = character(),
+  DISTANCES = numeric())
+
+for(i in 1:length(C)){
+  kk <- data.frame(
+    REGBIO = "a",
+    DISTANCES = 1)
+  a <- filter(LIC_REGBIO, LIC_REGBIO$REGBIO == C[i])
+  b <- filter(NP_REGBIO, NP_REGBIO$REGBIO == C[i])
+  a <- as.matrix(a[,c(2:11)])
+  b <- as.matrix(b[,c(2:11)])
+  kk$REGBIO <- C[i]
+  kk$DISTANCES <- emd2d(a, b, xdist = 1, ydist = 1, dist="euclidean")
+  distancias <- rbind(distancias, kk)
+}
+
+
+# Asimetria -----
+## CCAA----
+library(psych)
+
+asimetria <- data.frame(
+  CCAA = character(),
+  LIC = numeric(),
+  NP = numeric())
+
+for(i in 1:length(C)){
+  kk <- data.frame(
+    CCAA = "a",
+    LIC = 1,
+    NP = 1)
+  a <- filter(LIC, LIC$CCAA == C[i])
+  b <- filter(NP, NP$CCAA == C[i])
+  aa <- a$gridcode
+  bb <- b$gridcode
+  kk$CCAA <- C[i]
+  kk$LIC <- skew(c(aa))
+  kk$NP <- skew(c(bb))
+  asimetria <- rbind(asimetria, kk)
+}
+
+## REGBIO----
+asimetria_REGBIO <- data.frame(
+  CCAA = character(),
+  LIC = numeric(),
+  NP = numeric())
+
+for(i in 1:length(C)){
+  kk <- data.frame(
+    CCAA = "a",
+    LIC = 1,
+    NP = 1)
+  a <- filter(LIC, LIC$REGBIO == C[i])
+  b <- filter(NP, NP$REGBIO == C[i])
+  aa <- a$gridcode
+  bb <- b$gridcode
+  kk$CCAA <- C[i]
+  kk$LIC <- skew(c(aa))
+  kk$NP <- skew(c(bb))
+  asimetria_REGBIO <- rbind(asimetria_REGBIO, kk)
+}
+
 
 # Correlaciones
 sum(is.na(SER_LIC)) 
@@ -1241,33 +1395,6 @@ SER_LIC_CCAA %>%
   group_by(SER_LIC_CCAA$CCAA) %>% 
   summarise(SER = mean(SER))
 
-LIC_CCAA <- SER_LIC_CCAA[,c(1, 6:15)]
-NP_CCAA <- SER_NP_CCAA[,c(1, 6:15)]
-LIC_CCAA <- reshape2::melt(LIC_CCAA)
-NP_CCAA <- reshape2::melt(NP_CCAA)
-
-ggplot()+
-  geom_point(data= LIC_CCAA, aes(x= variable, y = value, group = CCAA, col = CCAA), size = 2, alpha =.5)+
-  geom_line(data= LIC_CCAA, aes(x= variable, y = value, group = CCAA, col = CCAA))+
-  geom_point(data= NP_CCAA, aes(x= variable, y = value, group = CCAA), size = 2, alpha =.3)+
-  geom_line(data= NP_CCAA, aes(x= variable, y = value, group = CCAA), alpha =.3)+
-  facet_wrap(~CCAA, ncol=3)+
-  geom_vline(xintercept = 5, col = "red", alpha = .5, t)+
-  labs(y = "%")+
-  theme(strip.background = element_blank(),
-        strip.text = element_blank(),
-        panel.background = element_rect(fill = "white",
-                                        colour = "white",
-                                        size = 0.5, linetype = "solid"),
-        panel.grid.major.y = element_line(size = 0.1, linetype = 'dashed',
-                                          colour = alpha("gray60",0.5)),
-        panel.grid.major.x = element_line(size = 0.1, linetype = 'solid',
-                                          colour = "gray60"),
-        axis.ticks = element_blank(),
-        axis.title.x = element_blank(),
-        axis.text.x = element_text(family = "mono", angle = 45, size = 10, hjust = 1),
-        axis.text.y = element_text(family = "mono", size = 10),
-        axis.title = element_text(family = "mono", angle = 90, size = 12))
   
 LIC_CCAA <- as.data.frame(t(SER_LIC_CCAA[,c(1, 6:15)]))
 colnames(LIC_CCAA) <- LIC_CCAA[1,]
