@@ -782,10 +782,25 @@ SER_LIC_CCAA <- mutate(SER_LIC_CCAA, CCAA_C =
                           SER_LIC_CCAA$CCAA == "Andalucía"          ~ "AN",
                           SER_LIC_CCAA$CCAA == "Región de Murcia"   ~ "MU"))
   
+  AN
+  AR
+  AS
+  CN
+  CM
+  CL
+  CT
+  MA
+  NA
+  CV
+  EX
+  GA
+  PV
+  MU
+  LR
   
   
   
-  
+AN (Andalucía),AR (Aragón),AS (Asturias, Principado de),CN (Cantabria),CM (Castilla - La Mancha),CL (Castilla y León),CT (Cataluña),MA (Comunidad de Madrid),NA (Comunidad Foral de Navarra),CV (Comunitat Valenciana),EX (Extremadura),GA (Galicia),PV (País Vasco),MU (Región de Murcia),LR (Rioja, La),
   
   
 "Galicia"                    
