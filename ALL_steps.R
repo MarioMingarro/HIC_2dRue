@@ -3,6 +3,7 @@ library(readr)
 library(ggpubr)
 library(reshape2)
 library(readxl)
+library(nortest)
 
 # CARGAR DATOS ----
 LIC <- read_delim("D:/LIC_2dRUE/LIC_RUE/LIC_RUE_AREA25_CCAA_RBIO_FOREST_HFI.txt", 
@@ -22,10 +23,11 @@ DEM_NP <- read_delim("D:/LIC_2dRUE/DEM/DEM_NO_RN2000_2dRUE.txt",
                      delim = ";", escape_double = FALSE, col_types = cols(Rowid_ = col_skip()), 
                      locale = locale(decimal_mark = ","), 
                      trim_ws = TRUE)
-
-AISLAMIENTO <- readxl::read_xlsx("D:/LIC_2dRUE/AISLAMIENTO/expansionIndex.xlsx")
-
 LIC <- left_join(LIC, DEM_LIC, by = c("FID" = "FID"))
+NP <- left_join(NP, DEM_NP, by = c("FID" = "FID"))
+
+# AISLAMIENTO ---
+AISLAMIENTO <- readxl::read_xlsx("D:/LIC_2dRUE/AISLAMIENTO/expansionIndex.xlsx")
 
 LIC <- left_join(LIC, AISLAMIENTO, by = c("NOMBRE" = "Name"))
 LIC <- rename(LIC, "AIS" = "expansionIndexNorm")
@@ -457,9 +459,7 @@ for (j in 1:1000) {
   # Obtener el índice SER
   SER_2 <- (SR_b - SR_a) / (SR_b + SR_a)
   
-  SER_NP_2 <- data.frame(SER = 2,
-                          ELEVATION = 2,
-                          FOREST = 2)
+  SER_NP_2 <- data.frame(SER = 2)
   
   SER_NP_2$SER <- SER_2
   SER_NP_2$ELEVATION <- median(na.omit(rand_NP$ELEVATION))
@@ -471,7 +471,7 @@ for (j in 1:1000) {
 
   
 # COMPARACION SER ----
-kk <- as.data.frame(cbind("ID" = as.numeric(rownames(SER_LIC)), "LIC" = as.numeric(SER_LIC$HFI), "NP" = SER_NP$HFI))
+kk <- as.data.frame(cbind("ID" = as.numeric(rownames(SER_LIC)), "SCIs" = as.numeric(SER_LIC$SER), "UbN2000" = SER_NP$SER))
 
 
 kk2 <- melt(kk[, c(2, 3)])
@@ -484,6 +484,7 @@ ggplot()+
   scale_color_manual(values=c("aquamarine3", "coral3"))+
   scale_fill_manual(values=c("aquamarine3", "coral3"))+
   labs(y = "SER")+
+  ylim(-0.5, 0.5)+
   theme(
     legend.position = "none",
     panel.background = element_rect(fill = "white",
@@ -492,15 +493,54 @@ ggplot()+
     panel.grid.major.y = element_line(size = 0.1, linetype = 'dashed',
                                       colour = alpha("gray60",0.5)),
     panel.grid.major.x = element_line(size = 0.1, linetype = 'solid',
-                                      colour = "gray60"),
+                                      colour = alpha("gray60",0.5)),
     axis.ticks = element_blank(),
     axis.title.x = element_blank(),
-    axis.text.x = element_text(family = "mono", angle = 45, size = 10, hjust = 1),
-    axis.text.y = element_text(family = "mono", size = 10),
-    axis.title = element_text(family = "mono", angle = 90, size = 12)
+    axis.text.x = element_text(family = "mono", angle = 0, size = 12, hjust = 0.5),
+    axis.text.y = element_text(family = "mono", size = 12),
+    axis.title.y = element_text(family = "mono", angle = 90, size = 12)
   )
 
+# Tablas
+a <- SER_LIC %>%
+  summarise(SER = median(SER),
+            elevacion = median(ELEVATION), 
+            TCD = median(TCD),
+            HFI = median(HFI)) 
 
+
+
+b <- SER_NP %>%
+  summarise(SER = median(SER),
+            elevacion = median(ELEVATION), 
+            TCD = median(TCD),
+            HFI = median(HFI)) 
+
+RESULT_SPAIN <- as.data.frame(cbind(a[,1], b[,1], a[,2], b[,2], a[,3], b[,3]))
+
+
+colnames(RESULT_SPAIN) <- c("SER_LIC", "SER_NP", "ELEVATION_LIC", "ELEVATION_NP", "TDC_LIC", "TDC_NP")
+
+writexl::write_xlsx(RESULT_SPAIN, "E:/LIC_2dRUE/RESULT/RESULT_SPAIN.xlsx")
+
+kk <- as.data.frame(cbind("ID" = as.numeric(rownames(SER_LIC)), "SCIs" = as.numeric(SER_LIC$SER), "UbN2000" = SER_NP$SER))
+
+ks.test(SER_LIC$SER, "pnorm")
+ks.test(SER_NP$SER, "pnorm")
+hist(SER_LIC$SER)
+hist(SER_NP$SER)
+IQR(SER_NP$SER)
+
+shapiro.test(kk$LIC)
+shapiro.test(kk$NP)
+
+wilcox.test(SER_LIC$SER, SER_NP$SER, paired = F)
+wilcox.test(SER_LIC$ELEVATION, SER_NP$ELEVATION, paired = F)
+wilcox.test(SER_LIC$TCD, SER_NP$TCD, paired = F)
+wilcox.test(SER_LIC$HFI, SER_NP$HFI, paired = F)
+
+---------------------------------------------------------
+  
 ggplot()+
   geom_point(data=kk, aes(x= kk$ID, y = kk$LIC), color = "aquamarine3", alpha=.5)+
   geom_point(data=kk, aes(x= kk$ID, y = kk$NP), color= "coral3", alpha=.5)+
@@ -561,33 +601,6 @@ ggplot() +
     axis.title = element_text(family = "mono", angle = 90, size = 12)
   )
 
-
-# Tablas
-a <- SER_LIC %>%
-  summarise(SER = mean(SER),
-            elevacion = mean(ELEVATION), 
-            forest = mean(FOREST)) 
-
-
-b <- SER_NP_ESPAÑA <- SER_NP %>%
-  summarise(SER = mean(SER),
-            elevacion = mean(ELEVATION), 
-            forest = mean(FOREST)) 
-
-RESULT_SPAIN <- as.data.frame(cbind(a[,1], b[,1], a[,2], b[,2], a[,3], b[,3]))
-
-
-colnames(RESULT_SPAIN) <- c("SER_LIC", "SER_NP", "ELEVATION_LIC", "ELEVATION_NP", "TDC_LIC", "TDC_NP")
-
-writexl::write_xlsx(RESULT_SPAIN, "E:/LIC_2dRUE/RESULT/RESULT_SPAIN.xlsx")
-
-
-
-hist(kk$NP)
-shapiro.test(kk$LIC)
-shapiro.test(kk$NP)
-
-wilcox.test(kk$LIC, kk$NP, paired = T)
 
 
 
@@ -673,7 +686,7 @@ for (i in 1:length(C)) {
   }
   
 }
-SER_LIC_CCAA <- SER_LIC_CCAA[, -c(7,8)]
+SER_LIC_CCAA <- SER_LIC_CCAA[, -c(6,7)]
 
 ## NP ----
 
@@ -688,8 +701,8 @@ SER_NP_CCAA <-  data.frame(
   
   for (i in 1:length(C)) {
     filtrados <- filter(NP, NP$CCAA == C[i])
-    for (j in 1:1){
-      rand_NP <- filtrados #[sample(nrow(filtrados), size = 190),]
+    for (j in 1:1000){
+      rand_NP <- filtrados[sample(nrow(filtrados), size = 190),]
       SER_1 <- data.frame(
         CCAA = "a",
         SER = 2,
@@ -740,51 +753,94 @@ SER_NP_CCAA <-  data.frame(
       
       SER_NP_2$CCAA <- C[i]
       SER_NP_2$SER <- SER_2
-      SER_NP_2$ELEVATION <- mean(na.omit(rand_NP$ELEVATION))
-      SER_NP_2$TCD <- mean(na.omit(rand_NP$TCD))
-      SER_NP_2$HFI <- mean(na.omit(rand_NP$HFI))
+      SER_NP_2$ELEVATION <- median(na.omit(rand_NP$ELEVATION))
+      SER_NP_2$TCD <- median(na.omit(rand_NP$TCD))
+      SER_NP_2$HFI <- median(na.omit(rand_NP$HFI))
       SER_NP_2 <-  cbind(SER_NP_2, SER_1)
       SER_NP_CCAA <-  rbind(SER_NP_CCAA, SER_NP_2)
     }
     
   }
-SER_NP_CCAA_ALL <- SER_NP_CCAA[, -c(6,7)]
+  SER_NP_CCAA <- SER_NP_CCAA[, -c(6,7)]
 
 
 ## COMPARACION SER CCAA ----
+SER_LIC_CCAA <- mutate(SER_LIC_CCAA, CCAA_C =
+                          case_when(SER_LIC_CCAA$CCAA == "Galicia" ~ "GA", 
+                          SER_LIC_CCAA$CCAA == "Asturias, Principado de"  ~ "AS",
+                          SER_LIC_CCAA$CCAA == "Cantabria"     ~ "CN",
+                          SER_LIC_CCAA$CCAA == "País Vasco"                  ~ "PV",
+                          SER_LIC_CCAA$CCAA == "Comunidad Foral de Navarra"  ~ "GA",
+                          SER_LIC_CCAA$CCAA == "Castilla y León"        ~ "CL",
+                          SER_LIC_CCAA$CCAA == "Aragón"                 ~ "AR",
+                          SER_LIC_CCAA$CCAA == "Cataluña"               ~ "CT",
+                          SER_LIC_CCAA$CCAA == "Rioja, La"              ~ "LR",
+                          SER_LIC_CCAA$CCAA == "Castilla - La Mancha"   ~ "CM",
+                          SER_LIC_CCAA$CCAA == "Comunidad de Madrid"    ~ "MA",
+                          SER_LIC_CCAA$CCAA == "Comunitat Valenciana"   ~ "CV",
+                          SER_LIC_CCAA$CCAA == "Extremadura"        ~ "EX",
+                          SER_LIC_CCAA$CCAA == "Andalucía"          ~ "AN",
+                          SER_LIC_CCAA$CCAA == "Región de Murcia"   ~ "MU"))
+  
+  
+  
+  
+  
+  
+  
+"Galicia"                    
+"Asturias, Principado de"    
+"Cantabria"                  
+"País Vasco"                 
+"Comunidad Foral de Navarra"
+"Castilla y León"            
+"Aragón"                     
+"Cataluña"                   
+"Rioja, La"                 
+"Castilla - La Mancha"      
+"Comunidad de Madrid"        
+"Comunitat Valenciana"       
+"Extremadura"                
+"Andalucía"                  
+"Región de Murcia"   
 
+  unique(SER_LIC_CCAA$CCAA)
 # Test de wilcoxon 
 SER_CCAA_COMPARATION_FINAL <-  data.frame(
   CCAA = character(),
-  shapiro_LIC = numeric(),
-  shapiro_NP = numeric(),
+  Anderson_Darling_LIC = numeric(),
+  Anderson_Darling_NP = numeric(),
   wilcox.test.pvalue = numeric(),
   wilcox.test.W = numeric())
 
 for( i in 1:length(C)){
   SER_CCAA_COMPARATION <-  data.frame(
     CCAA = "a",
-    shapiro_LIC = 1,
-    shapiro_NP = 1,
+    Anderson_Darling_LIC = 1,
+    Anderson_Darling_NP = 1,
     wilcox.test.pvalue = 1,
     wilcox.test.W = 1)
   
   a <- filter(SER_LIC_CCAA,  CCAA== paste0(C[i]))
   b <- filter(SER_NP_CCAA,  CCAA== paste0(C[i]))
-
-  a <- a[,4]
-  b <- b[,4]
+  # "SER" "ELEVATION" "TCD" "HFI" 
+  a <- a$TCD
+  b <- b$TCD
   
   SER_CCAA<- as.data.frame(cbind(a, b))
   colnames(SER_CCAA) <- c("LIC", "NP")
   
   SER_CCAA_COMPARATION$CCAA <- C[i]
-  SER_CCAA_COMPARATION$shapiro_LIC <- shapiro.test(SER_CCAA$LIC)$p.value
-  SER_CCAA_COMPARATION$shapiro_NP <- shapiro.test(SER_CCAA$NP)$p.value
-  SER_CCAA_COMPARATION$wilcox.test.pvalue <- wilcox.test(SER_CCAA$LIC, SER_CCAA$NP, paired = T)$p.value
-  SER_CCAA_COMPARATION$wilcox.test.W <- wilcox.test(SER_CCAA$LIC, SER_CCAA$NP, paired = T)$statistic
+  SER_CCAA_COMPARATION$Anderson_Darling_LIC <- ad.test(SER_CCAA$LIC)$p.value
+  #SER_CCAA_COMPARATION$Anderson_Darling_NP <- ad.test(SER_CCAA$NP)$p.value
+  SER_CCAA_COMPARATION$wilcox.test.pvalue <- wilcox.test(SER_CCAA$LIC, SER_CCAA$NP, paired = F)$p.value
+  SER_CCAA_COMPARATION$wilcox.test.W <- wilcox.test(SER_CCAA$LIC, SER_CCAA$NP, paired = F)$statistic
   SER_CCAA_COMPARATION_FINAL <- rbind(SER_CCAA_COMPARATION_FINAL, SER_CCAA_COMPARATION)
 }
+  
+wilcox.test(a$TCD, b$TCD, paired = F)
+median(a$TCD)
+median(b$TCD)
 
 # SER promedio LIC por CCAA
 a <- SER_LIC_CCAA %>%
@@ -811,10 +867,10 @@ colnames(RESULT_CCAA) <- c("CCAA", "SER_LIC", "SER_NP",
 
 writexl::write_xlsx(RESULT_CCAA, "E:/LIC_2dRUE/RESULT/RESULT_CCAA.xlsx")
 
-kk1 <- SER_LIC_CCAA_ALL[, c(1, 3)]
+kk1 <- SER_LIC_CCAA[, c(1, 5)]
 kk1 <- melt(kk1)
 
-kk2 <- SER_NP_CCAA_ALL[, c(1, 3)]
+kk2 <- SER_NP_CCAA_ALL[, c(1, 5)]
 kk2 <- melt(kk2)
 
 # Gráfico resultados
@@ -828,7 +884,7 @@ ggplot()+
                fill = "coral3", 
                colour = "coral3",
                alpha =.5)+
-  labs(y = "Elevation")+
+  labs(y = "HFI")+
   theme(
     panel.background = element_rect(fill = "white",
                                     colour = "white",
