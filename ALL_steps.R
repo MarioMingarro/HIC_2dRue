@@ -1170,7 +1170,7 @@ for (i in 1:length(nombres)) {
     SER_LIC_2$ELEVATION <- mean(na.omit(rand_LIC$ELEVATION))
     SER_LIC_2$TCD <- median(na.omit(rand_LIC$TCD))
     SER_LIC_2$HFI <- median(na.omit(rand_LIC$HFI))
-    SER_LIC_2$HFI <- median(na.omit(rand_LIC$AIS))
+    SER_LIC_2$AIS <- median(na.omit(rand_LIC$AIS))
     SER_LIC_2 <-  cbind( SER_LIC_2, SER_1)
     SER_LIC <-  rbind(SER_LIC, SER_LIC_2)
 }
