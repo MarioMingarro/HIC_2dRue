@@ -26,6 +26,9 @@ DEM_NP <- read_delim("D:/LIC_2dRUE/DEM/DEM_NO_RN2000_2dRUE.txt",
 LIC <- left_join(LIC, DEM_LIC, by = c("FID" = "FID"))
 NP <- left_join(NP, DEM_NP, by = c("FID" = "FID"))
 
+rm(DEM_LIC, DEM_NP)
+
+
 # AISLAMIENTO ---
 AISLAMIENTO <- readxl::read_xlsx("D:/LIC_2dRUE/AISLAMIENTO/expansionIndex.xlsx")
 
@@ -36,7 +39,7 @@ NP <- left_join(NP, DEM_NP, by = c("FID" = "FID"))
 
 LIC <- filter(LIC, LIC$NOMBRE %in% unique(AISLAMIENTO$Name))
 
-rm(DEM_LIC, DEM_NP)
+
 
 
 nombres_LIC <- as.data.frame(unique(LIC$NOMBRE)) 
@@ -686,7 +689,7 @@ for (i in 1:length(C)) {
   }
   
 }
-SER_LIC_CCAA <- SER_LIC_CCAA[, -c(6,7)]
+
 
 ## NP ----
 
@@ -761,65 +764,54 @@ SER_NP_CCAA <-  data.frame(
     }
     
   }
-  SER_NP_CCAA <- SER_NP_CCAA[, -c(6,7)]
 
+SER_LIC_CCAA <- SER_LIC_CCAA[, -c(6,7)]
+SER_NP_CCAA <- SER_NP_CCAA[, -c(6,7)]
+rm(filtrados, SER_1, SER_LIC_2, SER_NP_2, rand_LIC, rand_NP)
+
+
+SER_LIC_CCAA <- mutate(SER_LIC_CCAA, CCAA_C =
+                         case_when(
+                           SER_LIC_CCAA$CCAA == "Galicia"                     ~ "GA", 
+                           SER_LIC_CCAA$CCAA == "Asturias, Principado de"     ~ "AS",
+                           SER_LIC_CCAA$CCAA == "Cantabria"                   ~ "CN",
+                           SER_LIC_CCAA$CCAA == "País Vasco"                  ~ "PV",
+                           SER_LIC_CCAA$CCAA == "Comunidad Foral de Navarra"  ~ "NA",
+                           SER_LIC_CCAA$CCAA == "Castilla y León"             ~ "CL",
+                           SER_LIC_CCAA$CCAA == "Aragón"                      ~ "AR",
+                           SER_LIC_CCAA$CCAA == "Cataluña"                    ~ "CT",
+                           SER_LIC_CCAA$CCAA == "Rioja, La"                   ~ "LR",
+                           SER_LIC_CCAA$CCAA == "Castilla - La Mancha"        ~ "CM",
+                           SER_LIC_CCAA$CCAA == "Comunidad de Madrid"         ~ "MA",
+                           SER_LIC_CCAA$CCAA == "Comunitat Valenciana"        ~ "CV",
+                           SER_LIC_CCAA$CCAA == "Extremadura"                 ~ "EX",
+                           SER_LIC_CCAA$CCAA == "Andalucía"                   ~ "AN",
+                           SER_LIC_CCAA$CCAA == "Región de Murcia"            ~ "MU"))
+SER_NP_CCAA <- mutate(SER_NP_CCAA, CCAA_C =
+                        case_when(
+                          SER_LIC_CCAA$CCAA == "Galicia"                     ~ "GA", 
+                          SER_LIC_CCAA$CCAA == "Asturias, Principado de"     ~ "AS",
+                          SER_LIC_CCAA$CCAA == "Cantabria"                   ~ "CN",
+                          SER_LIC_CCAA$CCAA == "País Vasco"                  ~ "PV",
+                          SER_LIC_CCAA$CCAA == "Comunidad Foral de Navarra"  ~ "NA",
+                          SER_LIC_CCAA$CCAA == "Castilla y León"             ~ "CL",
+                          SER_LIC_CCAA$CCAA == "Aragón"                      ~ "AR",
+                          SER_LIC_CCAA$CCAA == "Cataluña"                    ~ "CT",
+                          SER_LIC_CCAA$CCAA == "Rioja, La"                   ~ "LR",
+                          SER_LIC_CCAA$CCAA == "Castilla - La Mancha"        ~ "CM",
+                          SER_LIC_CCAA$CCAA == "Comunidad de Madrid"         ~ "MA",
+                          SER_LIC_CCAA$CCAA == "Comunitat Valenciana"        ~ "CV",
+                          SER_LIC_CCAA$CCAA == "Extremadura"                 ~ "EX",
+                          SER_LIC_CCAA$CCAA == "Andalucía"                   ~ "AN",
+                          SER_LIC_CCAA$CCAA == "Región de Murcia"            ~ "MU"))
 
 ## COMPARACION SER CCAA ----
-SER_LIC_CCAA <- mutate(SER_LIC_CCAA, CCAA_C =
-                          case_when(SER_LIC_CCAA$CCAA == "Galicia" ~ "GA", 
-                          SER_LIC_CCAA$CCAA == "Asturias, Principado de"  ~ "AS",
-                          SER_LIC_CCAA$CCAA == "Cantabria"     ~ "CN",
-                          SER_LIC_CCAA$CCAA == "País Vasco"                  ~ "PV",
-                          SER_LIC_CCAA$CCAA == "Comunidad Foral de Navarra"  ~ "GA",
-                          SER_LIC_CCAA$CCAA == "Castilla y León"        ~ "CL",
-                          SER_LIC_CCAA$CCAA == "Aragón"                 ~ "AR",
-                          SER_LIC_CCAA$CCAA == "Cataluña"               ~ "CT",
-                          SER_LIC_CCAA$CCAA == "Rioja, La"              ~ "LR",
-                          SER_LIC_CCAA$CCAA == "Castilla - La Mancha"   ~ "CM",
-                          SER_LIC_CCAA$CCAA == "Comunidad de Madrid"    ~ "MA",
-                          SER_LIC_CCAA$CCAA == "Comunitat Valenciana"   ~ "CV",
-                          SER_LIC_CCAA$CCAA == "Extremadura"        ~ "EX",
-                          SER_LIC_CCAA$CCAA == "Andalucía"          ~ "AN",
-                          SER_LIC_CCAA$CCAA == "Región de Murcia"   ~ "MU"))
-  
-  AN
-  AR
-  AS
-  CN
-  CM
-  CL
-  CT
-  MA
-  NA
-  CV
-  EX
-  GA
-  PV
-  MU
-  LR
-  
-  
-  
-AN (Andalucía),AR (Aragón),AS (Asturias, Principado de),CN (Cantabria),CM (Castilla - La Mancha),CL (Castilla y León),CT (Cataluña),MA (Comunidad de Madrid),NA (Comunidad Foral de Navarra),CV (Comunitat Valenciana),EX (Extremadura),GA (Galicia),PV (País Vasco),MU (Región de Murcia),LR (Rioja, La),
-  
-  
-"Galicia"                    
-"Asturias, Principado de"    
-"Cantabria"                  
-"País Vasco"                 
-"Comunidad Foral de Navarra"
-"Castilla y León"            
-"Aragón"                     
-"Cataluña"                   
-"Rioja, La"                 
-"Castilla - La Mancha"      
-"Comunidad de Madrid"        
-"Comunitat Valenciana"       
-"Extremadura"                
-"Andalucía"                  
-"Región de Murcia"   
 
-  unique(SER_LIC_CCAA$CCAA)
+
+  
+  
+
+C2 <-  unique(SER_LIC_CCAA$CCAA_C)
 # Test de wilcoxon 
 SER_CCAA_COMPARATION_FINAL <-  data.frame(
   CCAA = character(),
@@ -836,11 +828,11 @@ for( i in 1:length(C)){
     wilcox.test.pvalue = 1,
     wilcox.test.W = 1)
   
-  a <- filter(SER_LIC_CCAA,  CCAA== paste0(C[i]))
-  b <- filter(SER_NP_CCAA,  CCAA== paste0(C[i]))
+  a <- filter(SER_LIC_CCAA,  CCAA== paste0(C[1]))
+  b <- filter(SER_NP_CCAA,  CCAA == paste0(C[1]))
   # "SER" "ELEVATION" "TCD" "HFI" 
-  a <- a$TCD
-  b <- b$TCD
+  a <- a$HFI
+  b <- b$HFI
   
   SER_CCAA<- as.data.frame(cbind(a, b))
   colnames(SER_CCAA) <- c("LIC", "NP")
@@ -848,30 +840,30 @@ for( i in 1:length(C)){
   SER_CCAA_COMPARATION$CCAA <- C[i]
   SER_CCAA_COMPARATION$Anderson_Darling_LIC <- ad.test(SER_CCAA$LIC)$p.value
   #SER_CCAA_COMPARATION$Anderson_Darling_NP <- ad.test(SER_CCAA$NP)$p.value
-  SER_CCAA_COMPARATION$wilcox.test.pvalue <- wilcox.test(SER_CCAA$LIC, SER_CCAA$NP, paired = F)$p.value
-  SER_CCAA_COMPARATION$wilcox.test.W <- wilcox.test(SER_CCAA$LIC, SER_CCAA$NP, paired = F)$statistic
+  SER_CCAA_COMPARATION$wilcox.test.pvalue <- wilcox.test(SER_CCAA$LIC, SER_CCAA$NP, paired = T)$p.value
+  SER_CCAA_COMPARATION$wilcox.test.W <- wilcox.test(SER_CCAA$LIC, SER_CCAA$NP, paired = T)$statistic
   SER_CCAA_COMPARATION_FINAL <- rbind(SER_CCAA_COMPARATION_FINAL, SER_CCAA_COMPARATION)
 }
   
-wilcox.test(a$TCD, b$TCD, paired = F)
-median(a$TCD)
-median(b$TCD)
+wilcox.test(a$SER, b$SER, paired = T)
+mean(a$SER)
+mean(b$SER)
 
 # SER promedio LIC por CCAA
 a <- SER_LIC_CCAA %>%
   group_by(CCAA = fct_inorder(CCAA)) %>%
-  summarise(SER = mean(SER),
-            elevacion = mean(ELEVATION), 
+  summarise(SER = median(SER),
+            elevacion = median(ELEVATION), 
             TCD = median(TCD),
-            HFI = median(HFI),
-            AIS = median(AIS)) 
+            HFI = median(HFI))
+
 # SER promedio NP por CCAA
 b <- SER_NP_CCAA %>%
   group_by(CCAA = fct_inorder(CCAA)) %>%
-  summarise(SER = mean(SER),
-            elevacion = mean(ELEVATION), 
-            TCD = mean(TCD),
-            HFI = mean(HFI))
+  summarise(SER = median(SER),
+            elevacion = median(ELEVATION), 
+            TCD = median(TCD),
+            HFI = median(HFI))
 
 # Tablas resultados
 RESULT_CCAA <- cbind(a[,1], a[,2], b[,2], a[,3], b[,3], a[,4], b[,4], a[,5], b[,5])
@@ -882,37 +874,38 @@ colnames(RESULT_CCAA) <- c("CCAA", "SER_LIC", "SER_NP",
 
 writexl::write_xlsx(RESULT_CCAA, "E:/LIC_2dRUE/RESULT/RESULT_CCAA.xlsx")
 
-kk1 <- SER_LIC_CCAA[, c(1, 5)]
+kk1 <- SER_LIC_CCAA[, c(16, 2)]
 kk1 <- melt(kk1)
 
-kk2 <- SER_NP_CCAA_ALL[, c(1, 5)]
+kk2 <- SER_NP_CCAA[, c(16, 2)]
 kk2 <- melt(kk2)
 
 # Gráfico resultados
 
 ggplot()+
-  geom_boxplot(data= kk1, aes(y = value, x = factor(CCAA)), 
+  geom_boxplot(data= kk1, aes(y = value, x = factor(CCAA_C)), 
                fill = "aquamarine3", 
                colour ="aquamarine3", 
                alpha =.5)+
-  geom_boxplot(data= kk2, aes(y = value, x = factor(CCAA)), 
+  geom_boxplot(data= kk2, aes(y = value, x = factor(CCAA_C)), 
                fill = "coral3", 
                colour = "coral3",
                alpha =.5)+
-  labs(y = "HFI")+
+  labs(y = "SER")+
   theme(
+    legend.position = "none",
     panel.background = element_rect(fill = "white",
                                     colour = "white",
                                     size = 0.5, linetype = "solid"),
     panel.grid.major.y = element_line(size = 0.1, linetype = 'dashed',
                                       colour = alpha("gray60",0.5)),
     panel.grid.major.x = element_line(size = 0.1, linetype = 'solid',
-                                      colour = "gray60"),
+                                      colour = alpha("gray60",0.5)),
     axis.ticks = element_blank(),
     axis.title.x = element_blank(),
-    axis.text.x = element_text(family = "mono", angle = 45, size = 10, hjust = 1),
-    axis.text.y = element_text(family = "mono", size = 10),
-    axis.title = element_text(family = "mono", angle = 90, size = 12)
+    axis.text.x = element_text(family = "mono", angle = 0, size = 12, hjust = 0.5),
+    axis.text.y = element_text(family = "mono", size = 12),
+    axis.title.y = element_text(family = "mono", angle = 90, size = 12)
   )
 
 # Correlaciones
