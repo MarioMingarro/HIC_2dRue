@@ -6,7 +6,9 @@ packages.to.use <- c("tidyverse",
                      "nortest",
                      "foreign",
                      "emdist",
-                     "psych")
+                     "psych",
+                     "corrplot",
+                     "RColorBrewer")
 
 packages.to.use <- unique(packages.to.use)
 
@@ -22,3 +24,6 @@ rm(packages.to.use,package)
 # CARGAR DATOS ----
 LIC <- foreign::read.dbf("D:/LIC_2dRUE/DATA/LIC_DATA.dbf")
 NP <- foreign::read.dbf( "D:/LIC_2dRUE/DATA/NO_RN2000_DATA.dbf")
+
+library(corrplot)
+library(RColorBrewer)

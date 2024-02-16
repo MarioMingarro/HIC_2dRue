@@ -6,20 +6,20 @@ library(readxl)
 library(nortest)
 
 # CARGAR DATOS ----
-LIC <- read_delim("D:/LIC_2dRUE/LIC_RUE/LIC_RUE_AREA25_CCAA_RBIO_FOREST_HFI.txt", 
+LIC <- read_delim("E:/LIC_2dRUE/LIC_RUE/LIC_RUE_AREA25_CCAA_RBIO_FOREST_HFI.txt", 
                   delim = ";", escape_double = FALSE, locale = locale(decimal_mark = ","), 
                   trim_ws = TRUE)
 
-NP <- read_delim("D:/LIC_2dRUE/LIC_RUE/NO_RN2000_RUE_AREA25_CCAA_RBIO_FOREST_HFI.txt", 
+NP <- read_delim("E:/LIC_2dRUE/LIC_RUE/NO_RN2000_RUE_AREA25_CCAA_RBIO_FOREST_HFI.txt", 
                  delim = ";", escape_double = FALSE, locale = locale(decimal_mark = ","), 
                  trim_ws = TRUE)
 
-DEM_LIC <- read_delim("D:/LIC_2dRUE/DEM/DEM_LIC_2dRUE.txt", 
+DEM_LIC <- read_delim("E:/LIC_2dRUE/DEM/DEM_LIC_2dRUE.txt", 
            delim = ";", escape_double = FALSE, col_types = cols(Rowid_ = col_skip()), 
            locale = locale(decimal_mark = ","), 
            trim_ws = TRUE)
 
-DEM_NP <- read_delim("D:/LIC_2dRUE/DEM/DEM_NO_RN2000_2dRUE.txt", 
+DEM_NP <- read_delim("E:/LIC_2dRUE/DEM/DEM_NO_RN2000_2dRUE.txt", 
                      delim = ";", escape_double = FALSE, col_types = cols(Rowid_ = col_skip()), 
                      locale = locale(decimal_mark = ","), 
                      trim_ws = TRUE)
@@ -474,7 +474,7 @@ for (j in 1:1000) {
 
   
 # COMPARACION SER ----
-kk <- as.data.frame(cbind("ID" = as.numeric(rownames(SER_LIC)), "SCIs" = as.numeric(SER_LIC$SER), "UbN2000" = SER_NP$SER))
+kk <- as.data.frame(cbind("ID" = as.numeric(rownames(SER_LIC)), "SCIs" = as.numeric(SER_LIC$SER), "UN2000" = SER_NP$SER))
 
 
 kk2 <- melt(kk[, c(2, 3)])
@@ -828,8 +828,8 @@ for( i in 1:length(C)){
     wilcox.test.pvalue = 1,
     wilcox.test.W = 1)
   
-  a <- filter(SER_LIC_CCAA,  CCAA== paste0(C[1]))
-  b <- filter(SER_NP_CCAA,  CCAA == paste0(C[1]))
+  a <- filter(SER_LIC_CCAA,  CCAA== paste0(C[i]))
+  b <- filter(SER_NP_CCAA,  CCAA == paste0(C[i]))
   # "SER" "ELEVATION" "TCD" "HFI" 
   a <- a$HFI
   b <- b$HFI
@@ -933,8 +933,8 @@ SER_LIC_REGBIO <-  data.frame(
 
 for (i in 1:length(C)) {
   filtrados <- filter(LIC, LIC$REGBIO == C[i])
-  for (j in 1){
-    rand_LIC <- filtrados#[sample(nrow(filtrados), size = 190),]
+  for (j in 1:1000){
+    rand_LIC <- filtrados[sample(nrow(filtrados), size = 190),]
     SER_1 <- data.frame(
       REGBIO = "a",
       SER = 2,
@@ -1069,56 +1069,60 @@ for (i in 1:length(C)) {
   }
 }
 
+SER_LIC_REGBIO <- SER_LIC_REGBIO[, -c(6,7)]
+SER_NP_REGBIO  <- SER_NP_REGBIO [, -c(6,7)]
+
 ## COMPARACION SER REGBIO ----
 
 # Test de wilcoxon 
 SER_REGBIO_COMPARATION_FINAL <-  data.frame(
   REGBIO = character(),
-  shapiro_LIC = numeric(),
-  shapiro_NP = numeric(),
+  Anderson_Darling_LIC = numeric(),
+  Anderson_Darling_NP = numeric(),
   wilcox.test.pvalue = numeric(),
   wilcox.test.W = numeric())
 
 for( i in 1:length(C)){
   SER_REGBIO_COMPARATION <-  data.frame(
     REGBIO = "a",
-    shapiro_LIC = 1,
-    shapiro_NP = 1,
+    Anderson_Darling_LIC = 1,
+    Anderson_Darling_NP = 1,
     wilcox.test.pvalue = 1,
     wilcox.test.W = 1)
   
   a <- filter(SER_LIC_REGBIO,  REGBIO== paste0(C[i]))
-  b <- filter(SER_NP_REGBIO,  REGBIO== paste0(C[i]))
-  
-  a <- a[,4]
-  b <- b[,4]
+  b <- filter(SER_NP_REGBIO,  REGBIO == paste0(C[i]))
+  # "SER" "ELEVATION" "TCD" "HFI" 
+  a <- a$SER
+  b <- b$SER
   
   SER_REGBIO<- as.data.frame(cbind(a, b))
   colnames(SER_REGBIO) <- c("LIC", "NP")
   
   SER_REGBIO_COMPARATION$REGBIO <- C[i]
-  SER_REGBIO_COMPARATION$shapiro_LIC <- shapiro.test(SER_REGBIO$LIC)$p.value
-  SER_REGBIO_COMPARATION$shapiro_NP <- shapiro.test(SER_REGBIO$NP)$p.value
+  SER_REGBIO_COMPARATION$Anderson_Darling_LIC <- ad.test(SER_REGBIO$LIC)$p.value
+  SER_REGBIO_COMPARATION$Anderson_Darling_NP <- ad.test(SER_REGBIO$NP)$p.value
   SER_REGBIO_COMPARATION$wilcox.test.pvalue <- wilcox.test(SER_REGBIO$LIC, SER_REGBIO$NP, paired = T)$p.value
   SER_REGBIO_COMPARATION$wilcox.test.W <- wilcox.test(SER_REGBIO$LIC, SER_REGBIO$NP, paired = T)$statistic
   SER_REGBIO_COMPARATION_FINAL <- rbind(SER_REGBIO_COMPARATION_FINAL, SER_REGBIO_COMPARATION)
 }
 
+wilcox.test(a$SER, b$SER, paired = T)
+
 # SER promedio LIC por REGBIO
 a <- SER_LIC_REGBIO %>%
   group_by(REGBIO = fct_inorder(REGBIO)) %>%
-  summarise(SER = mean(SER),
-            elevacion = mean(ELEVATION), 
-            TCD = mean(TCD),
-            HFI = mean(HFI))
+  summarise(SER = median(SER),
+            elevacion = median(ELEVATION), 
+            TCD = median(TCD),
+            HFI = median(HFI))
 # SER promedio NP por REGBIO
 b <- SER_NP_REGBIO %>%
   group_by(REGBIO = fct_inorder(REGBIO)) %>%
-  summarise(SER = mean(SER),
-            elevacion = mean(ELEVATION), 
-            TCD = mean(TCD),
-            HFI = mean(HFI))
-
+  summarise(SER = median(SER),
+            elevacion = median(ELEVATION), 
+            TCD = median(TCD),
+            HFI = median(HFI))
 # Tablas resultados
 RESULT_REGBIO <- cbind(a[,1], a[,2], b[,2], a[,3], b[,3], a[,4], b[,4], a[,5], b[,5])
 colnames(RESULT_REGBIO) <- c("REGBIO", "SER_LIC", "SER_NP", 
@@ -1128,10 +1132,10 @@ colnames(RESULT_REGBIO) <- c("REGBIO", "SER_LIC", "SER_NP",
 
 writexl::write_xlsx(RESULT_REGBIO, "E:/LIC_2dRUE/RESULT/RESULT_REGBIO.xlsx")
 
-kk1 <- SER_LIC_REGBIO[, c(1, 3)]
+kk1 <- SER_LIC_REGBIO[, c(1, 2)]
 kk1 <- melt(kk1)
 
-kk2 <- SER_NP_REGBIO[, c(1, 3)]
+kk2 <- SER_NP_REGBIO[, c(1, 2)]
 kk2 <- melt(kk2)
 
 # Gráfico resultados
@@ -1145,20 +1149,21 @@ ggplot()+
                fill = "coral3", 
                colour = "coral3",
                alpha =.5)+
-  labs(y = "Elevation")+
+  labs(y = "SER")+
   theme(
+    legend.position = "none",
     panel.background = element_rect(fill = "white",
                                     colour = "white",
                                     size = 0.5, linetype = "solid"),
     panel.grid.major.y = element_line(size = 0.1, linetype = 'dashed',
                                       colour = alpha("gray60",0.5)),
     panel.grid.major.x = element_line(size = 0.1, linetype = 'solid',
-                                      colour = "gray60"),
+                                      colour = alpha("gray60",0.5)),
     axis.ticks = element_blank(),
     axis.title.x = element_blank(),
-    axis.text.x = element_text(family = "mono", angle = 45, size = 10, hjust = 1),
-    axis.text.y = element_text(family = "mono", size = 10),
-    axis.title = element_text(family = "mono", angle = 90, size = 12)
+    axis.text.x = element_text(family = "mono", angle = 0, size = 12, hjust = 0.5),
+    axis.text.y = element_text(family = "mono", size = 12),
+    axis.title.y = element_text(family = "mono", angle = 90, size = 12)
   )
 
 # ALL LIC ----
