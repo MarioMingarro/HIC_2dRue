@@ -4,7 +4,9 @@ packages.to.use <- c("tidyverse",
                      "reshape2",
                      "readxl",
                      "nortest",
-                     "foreign")
+                     "foreign",
+                     "emdist",
+                     "psych")
 
 packages.to.use <- unique(packages.to.use)
 
