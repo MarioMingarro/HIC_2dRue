@@ -137,7 +137,7 @@ ggplot()+
   geom_point(data= NP_CCAA_R, aes(x= variable, y = value, group = CCAA), col = "coral3", size = 2, alpha =.8)+
   geom_line(data= NP_CCAA_R, aes(x= variable, y = value, group = CCAA), col = "coral3", alpha =.5)+
   facet_wrap(~CCAA_C, ncol=3)+
-  geom_vline(xintercept = 5, col = "red", alpha = .5, t)+
+  #geom_vline(xintercept = 5, col = "red", alpha = .5, t)+
   labs(y = "%")+
   theme(strip.background = element_blank(),
         panel.background = element_rect(fill = "white",
@@ -145,9 +145,9 @@ ggplot()+
                                         size = 0.5, linetype = "solid"),
         legend.position = "none",
         panel.grid.major.y = element_line(size = 0.1, linetype = 'dashed',
-                                          colour = alpha("gray60",0.5)),
+                                          colour = "gray90"),
         panel.grid.major.x = element_line(size = 0.1, linetype = 'dashed',
-                                          colour = alpha("gray60",0.5)),
+                                          colour = "gray90"),
         axis.ticks = element_blank(),
         axis.title.x = element_blank(),
         axis.text.x = element_text(family = "mono", angle = 45, size = 10, hjust = 1),
@@ -296,7 +296,7 @@ ggplot()+
   geom_point(data= NP_REGBIO_R, aes(x= variable, y = value, group = REGBIO), col = "coral3", size = 2, alpha =.8)+
   geom_line(data= NP_REGBIO_R, aes(x= variable, y = value, group = REGBIO), col = "coral3", alpha =.5)+
   facet_wrap(~REGBIO, ncol=3)+
-  geom_vline(xintercept = 5, col = "red", alpha = .5, t)+
+  #geom_vline(xintercept = 5, col = "red", alpha = .5, t)+
   labs(y = "%")+
   theme(strip.background = element_blank(),
         panel.background = element_rect(fill = "white",
@@ -304,9 +304,9 @@ ggplot()+
                                         size = 0.5, linetype = "solid"),
         legend.position = "none",
         panel.grid.major.y = element_line(size = 0.1, linetype = 'dashed',
-                                          colour = alpha("gray60",0.5)),
+                                          colour = "gray90"),
         panel.grid.major.x = element_line(size = 0.1, linetype = 'dashed',
-                                          colour = alpha("gray60",0.5)),
+                                          colour = "gray90"),
         axis.ticks = element_blank(),
         axis.title.x = element_blank(),
         axis.text.x = element_text(family = "mono", angle = 45, size = 10, hjust = 1),
