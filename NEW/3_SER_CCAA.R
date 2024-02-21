@@ -282,11 +282,11 @@ for( i in 1:length(C)){
     wilcox.test.pvalue = 1,
     wilcox.test.W = 1)
   
-  a <- filter(SER_LIC_CCAA,  CCAA== paste0(C[1]))
-  b <- filter(SER_NP_CCAA,  CCAA == paste0(C[1]))
-  # "SER" "ELEVATION" "TCD" "HFI" 
-  a <- a$SER
-  b <- b$SER
+  a <- filter(SER_LIC_CCAA,  CCAA== paste0(C[i]))
+  b <- filter(SER_NP_CCAA,  CCAA == paste0(C[i]))
+  # "SER" "ELEVATION" "SLOPE" "TCD" "HFI" 
+  a <- a$TCD
+  b <- b$TCD
   
   SER_CCAA<- as.data.frame(cbind(a, b))
   colnames(SER_CCAA) <- c("LIC", "NP")
@@ -299,7 +299,7 @@ for( i in 1:length(C)){
   SER_CCAA_COMPARATION_FINAL <- rbind(SER_CCAA_COMPARATION_FINAL, SER_CCAA_COMPARATION)
 }
 
-wilcox.test(a$SER, b$SER, paired = T)
+wilcox.test(a , b, paired = T)
 mean(a$SER)
 mean(b$SER)
 
@@ -551,11 +551,11 @@ for( i in 1:length(C)){
     wilcox.test.pvalue = 1,
     wilcox.test.W = 1)
   
-  a <- filter(SER_LIC_REGBIO,  REGBIO== paste0(C[1]))
-  b <- filter(SER_NP_REGBIO,  REGBIO == paste0(C[1]))
-  # "SER" "ELEVATION" "TCD" "HFI" 
-  a <- a$SER
-  b <- b$SER
+  a <- filter(SER_LIC_REGBIO,  REGBIO== paste0(C[i]))
+  b <- filter(SER_NP_REGBIO,  REGBIO == paste0(C[i]))
+  # "SER" "ELEVATION" "SLOPE" "TCD" "HFI" 
+  a <- a$HFI
+  b <- b$HFI
   
   SER_REGBIO<- as.data.frame(cbind(a, b))
   colnames(SER_REGBIO) <- c("LIC", "NP")
