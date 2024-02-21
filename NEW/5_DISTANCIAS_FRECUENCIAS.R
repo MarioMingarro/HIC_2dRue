@@ -174,6 +174,7 @@ for(i in 1:length(C)){
 }
 
 distancias_CCAA <- distancias
+writexl::write_xlsx(distancias_CCAA, "B:/A_GABRIEL/A_LIC_2dRUE/6_RESULTS/distancias_CCAA.xlsx")
 
 ## Asimetria -----
 asimetria <- data.frame(
@@ -199,7 +200,7 @@ asimetria_CCAA <- asimetria
 
 ###.............................................................................###
 
-## REGBIO----
+# REGBIO----
 
 C <- unique(NP$REGBIO)
 ## Clases 2dRUE---- 
@@ -332,6 +333,7 @@ for(i in 1:length(C)){
   distancias <- rbind(distancias, kk)
 }
 distancias_REGBIO <- distancias
+writexl::write_xlsx(distancias_REGBIO, "B:/A_GABRIEL/A_LIC_2dRUE/6_RESULTS/distancias_REGBIO.xlsx")
 
 ## Asimetria -----
 asimetria <- data.frame(
