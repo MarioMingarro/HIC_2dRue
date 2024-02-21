@@ -197,3 +197,7 @@ colnames(RESULT_SPAIN) <- c("SER_LIC", "SER_NP",
                             "HFI_LIC", "HFI_NP")
 
 writexl::write_xlsx(RESULT_SPAIN, "B:/A_GABRIEL/A_LIC_2dRUE/6_RESULTS/RESULT_SPAIN.xlsx")
+
+# Comparation ---- 
+# "SER" "ELEVATION" "SLOPE" "TCD" "HFI"
+wilcox.test(SER_LIC$HFI, SER_NP$HFI, paired = T)
