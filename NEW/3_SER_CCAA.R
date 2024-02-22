@@ -140,8 +140,7 @@ for (i in 1:length(C)) {
       ELEVATION = 2,
       SLOPE = 2,
       TCD = 2,
-      HFI = 2
-    )
+      HFI = 2)
     
     SER_NP_2$CCAA <- C[i]
     SER_NP_2$SER <- SER_2
