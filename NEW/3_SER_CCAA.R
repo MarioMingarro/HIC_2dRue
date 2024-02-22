@@ -261,6 +261,7 @@ ggplot()+
                alpha =.5,
                position = position_nudge(x=.1),
                geom="errorbar", width=0.5)+
+  ylim(-1,1)+
   labs(y = "SER")+
   theme(strip.background = element_blank(),
         panel.background = element_rect(fill = "white",
@@ -273,8 +274,8 @@ ggplot()+
                                           colour = "gray60"),
         axis.ticks = element_blank(),
         axis.title.x = element_blank(),
-        axis.text.x = element_text(family = "mono", angle = 45, size = 10, hjust = 1),
-        axis.text.y = element_text(family = "mono", size = 10),
+        axis.text.x = element_text(family = "mono", angle = 45, size = 12, hjust = 1, colour = "gray10"),
+        axis.text.y = element_text(family = "mono", size = 10,colour = "gray10"),
         axis.title = element_text(family = "mono", angle = 90, size = 12),
         strip.text = element_text(family = "mono", size = 10))
   
@@ -513,23 +514,38 @@ colnames(RESULT_REGBIO) <- c("REGBIO",
 
 #writexl::write_xlsx(RESULT_REGBIO, "B:/A_GABRIEL/A_LIC_2dRUE/6_RESULTS/RESULT_REGBIO.xlsx")
 
-kk1 <- SER_LIC_REGBIO[, c(15, 2)]
+kk1 <- SER_LIC_REGBIO[, c(1, 2)]
 kk1 <- melt(kk1)
 
-kk2 <- SER_NP_REGBIO[, c(15, 2)]
+kk2 <- SER_NP_REGBIO[, c(1, 2)]
 kk2 <- melt(kk2)
 
 # Gráfico resultados
 
 ggplot()+
-  geom_boxplot(data= kk1, aes(y = value, x = factor(REGBIO_C)), 
+  geom_boxplot(data= kk1, aes(y = value, x = factor(REGBIO)), 
                fill = "aquamarine3", 
                colour ="aquamarine3", 
-               alpha =.5)+
-  geom_boxplot(data= kk2, aes(y = value, x = factor(REGBIO_C)), 
-               fill = "coral3", 
+               alpha =.5,
+               position = position_nudge(x=-.1),
+               width = 0.25)+
+  stat_boxplot(data= kk1, aes(y = value, x = factor(REGBIO)), 
+               colour = "aquamarine3",
+               alpha =.5,
+               position = position_nudge(x=-.1),
+               geom="errorbar", width=0.5)+
+  geom_boxplot(data= kk2, aes(y = value, x = factor(REGBIO)), 
+               fill = "coral3",
                colour = "coral3",
-               alpha =.5)+
+               alpha =.5,
+               position = position_nudge(x=.1),
+               width = 0.25)+
+  stat_boxplot(data= kk2, aes(y = value, x = factor(REGBIO)),
+               colour = "coral3",
+               alpha =.5,
+               position = position_nudge(x=.1),
+               geom="errorbar", width=0.5)+
+  ylim(-1,1)+
   labs(y = "SER")+
   theme(strip.background = element_blank(),
         panel.background = element_rect(fill = "white",
@@ -542,8 +558,8 @@ ggplot()+
                                           colour = "gray60"),
         axis.ticks = element_blank(),
         axis.title.x = element_blank(),
-        axis.text.x = element_text(family = "mono", angle = 45, size = 10, hjust = 1),
-        axis.text.y = element_text(family = "mono", size = 10),
+        axis.text.x = element_text(family = "mono", angle = 45, size = 12, hjust = 1, colour = "gray10"),
+        axis.text.y = element_text(family = "mono", size = 10,colour = "gray10"),
         axis.title = element_text(family = "mono", angle = 90, size = 12),
         strip.text = element_text(family = "mono", size = 10))
 
