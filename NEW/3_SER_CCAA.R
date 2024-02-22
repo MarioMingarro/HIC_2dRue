@@ -608,3 +608,39 @@ corrplot(cor_LIC, type="upper", order="hclust",
          col=brewer.pal(n=8, name="RdYlBu"))
 corrplot(cor_NP, type="upper", order="hclust",
          col=brewer.pal(n=8, name="RdYlBu"))
+
+
+qqnorm(SER_LIC_CCAA$SER)
+hist(SER_NP_CCAA$SER)
+
+library(lmodel2)
+lmodel2(SER~SLOPE, data = SER_LIC_CCAA)
+lmodel2(SER~TCD, data = SER_LIC_CCAA)
+lmodel2(SER~HFI, data = SER_LIC_CCAA)
+lm1 <- lm(SER~SLOPE*CCAA+TCD*CCAA+HFI*CCAA, data = SER_LIC_CCAA)
+qqnorm(residuals(lm1))
+check_model(lm1)
+
+ad.test(SER_LIC_CCAA$SER)
+norm <- rnorm(100, mean = 5, sd = 3)
+ad.test(norm)
+
+library(car)
+relaciones <- ~SER+ELEVATION+SLOPE+TCD+HFI
+pairs(relaciones, data=SER_LIC_CCAA)
+## pch=".", pch="0", pch="1"; para exactamente eso; 
+## pch=0 (cuadrado vacio), pch=1 (circulo vacio), pch=2 (triangulo vacio), pch=5 (rombo vacio)
+## panel con valores de correlaciones
+panel.cor <- function(x, y, digits=2, prefix="", cex.cor, ...) {
+  usr <- par("usr")
+  on.exit(par(usr))
+  par(usr = c(0, 1, 0, 1))
+  r <- abs(cor(x, y, use="complete.obs"))
+  txt <- format(c(r, 0.123456789), digits=digits)[1]
+  txt <- paste(prefix, txt, sep="")
+  if(missing(cex.cor)) cex.cor <- 0.8/strwidth(txt)
+  text(0.5, 0.5, txt, col="blue", cex = cex.cor * (1 + r) / 0.1)    ## cambiar el tamannio de la letra modificando "0.25" en el denominador de "cex = cex.cor * (1 + r) / 0.25"
+}
+scatterplotMatrix(relaciones, data=SER_LIC_CCAA, pch=19, cex=0.2, cex.lab=3, cex.axis=1.5, diagonal=TRUE, col="red", 
+                  col.axis='black', regLine=list(method=lm, col="blue", lwd=2), smooth=TRUE,
+                  main="los numeros son r lineales en valor absoluto", lower.panel=panel.cor)
