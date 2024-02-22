@@ -6,9 +6,7 @@ source("Functions.R")
 # CCAA ----
 ## LIC 
 # Crear un nuevo dataframe donde se almacenarán los resultados
-
 C <- unique(LIC$CCAA)
-
 
 SER_LIC_CCAA <-  data.frame(
   CCAA = character(),
@@ -244,11 +242,25 @@ ggplot()+
   geom_boxplot(data= kk1, aes(y = value, x = factor(CCAA_C)), 
                fill = "aquamarine3", 
                colour ="aquamarine3", 
-               alpha =.5)+
+               alpha =.5,
+               position = position_nudge(x=-.1),
+               width = 0.25)+
+  stat_boxplot(data= kk1, aes(y = value, x = factor(CCAA_C)), 
+               colour = "aquamarine3",
+               alpha =.5,
+               position = position_nudge(x=-.1),
+               geom="errorbar", width=0.5)+
   geom_boxplot(data= kk2, aes(y = value, x = factor(CCAA_C)), 
-               fill = "coral3", 
+               fill = "coral3",
                colour = "coral3",
-               alpha =.5)+
+               alpha =.5,
+               position = position_nudge(x=.1),
+               width = 0.25)+
+  stat_boxplot(data= kk2, aes(y = value, x = factor(CCAA_C)),
+               colour = "coral3",
+               alpha =.5,
+               position = position_nudge(x=.1),
+               geom="errorbar", width=0.5)+
   labs(y = "SER")+
   theme(strip.background = element_blank(),
         panel.background = element_rect(fill = "white",
