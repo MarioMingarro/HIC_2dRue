@@ -297,8 +297,8 @@ for( i in 1:length(C)){
   a <- filter(SER_LIC_CCAA,  CCAA== paste0(C[i]))
   b <- filter(SER_NP_CCAA,  CCAA == paste0(C[i]))
   # "SER" "ELEVATION" "SLOPE" "TCD" "HFI" 
-  a <- a$TCD
-  b <- b$TCD
+  a <- a$HFI
+  b <- b$HFI
   
   SER_CCAA<- as.data.frame(cbind(a, b))
   colnames(SER_CCAA) <- c("LIC", "NP")
@@ -306,8 +306,8 @@ for( i in 1:length(C)){
   SER_CCAA_COMPARATION$CCAA <- C[i]
   SER_CCAA_COMPARATION$Anderson_Darling_LIC <- ad.test(SER_CCAA$LIC)$p.value
   #SER_CCAA_COMPARATION$Anderson_Darling_NP <- ad.test(SER_CCAA$NP)$p.value
-  SER_CCAA_COMPARATION$wilcox.test.pvalue <- wilcox.test(SER_CCAA$LIC, SER_CCAA$NP, paired = T)$p.value
-  SER_CCAA_COMPARATION$wilcox.test.W <- wilcox.test(SER_CCAA$LIC, SER_CCAA$NP, paired = T)$statistic
+  SER_CCAA_COMPARATION$wilcox.test.pvalue <- wilcox.test(SER_CCAA$LIC, SER_CCAA$NP, paired = T, conf.level = 0.95)$p.value
+  SER_CCAA_COMPARATION$wilcox.test.W <- wilcox.test(SER_CCAA$LIC, SER_CCAA$NP, paired = T, conf.level = 0.99)$statistic
   SER_CCAA_COMPARATION_FINAL <- rbind(SER_CCAA_COMPARATION_FINAL, SER_CCAA_COMPARATION)
 }
 

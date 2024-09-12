@@ -22,11 +22,9 @@ SER_LIC_REGBIO <-  data.frame(
 
 for (i in 1:length(C)) {
   filtrados <- filter(LIC, LIC$REGBIO == C[i])
-  for (j in 1){
-    rand_LIC <- filtrados#[sample(nrow(filtrados), size = 190),]
+  for (j in 1:1000){
+    rand_LIC <- filtrados[sample(nrow(filtrados), size = 1000),]
     SER_1 <- data.frame(
-      REGBIO = "a",
-      SER = 2,
       ABR = 2,
       BAS = 2,
       MDEG = 2,
@@ -100,10 +98,8 @@ SER_NP_REGBIO <-  data.frame(
 for (i in 1:length(C)) {
   filtrados <- filter(NP, NP$REGBIO == C[i])
   for (j in 1:1000){
-    rand_NP <- filtrados[sample(nrow(filtrados), size = 190),]
+    rand_NP <- filtrados[sample(nrow(filtrados), size = 1000),]
     SER_1 <- data.frame(
-      REGBIO = "a",
-      SER = 2,
       ABR = 2,
       BAS = 2,
       MDEG = 2,
@@ -182,8 +178,8 @@ for( i in 1:length(C)){
   a <- filter(SER_LIC_REGBIO,  REGBIO== paste0(C[i]))
   b <- filter(SER_NP_REGBIO,  REGBIO== paste0(C[i]))
   
-  a <- a[,4]
-  b <- b[,4]
+  a <- a[,6]
+  b <- b[,6]
   
   SER_REGBIO<- as.data.frame(cbind(a, b))
   colnames(SER_REGBIO) <- c("LIC", "NP")
@@ -191,8 +187,8 @@ for( i in 1:length(C)){
   SER_REGBIO_COMPARATION$REGBIO <- C[i]
   SER_REGBIO_COMPARATION$shapiro_LIC <- shapiro.test(SER_REGBIO$LIC)$p.value
   SER_REGBIO_COMPARATION$shapiro_NP <- shapiro.test(SER_REGBIO$NP)$p.value
-  SER_REGBIO_COMPARATION$wilcox.test.pvalue <- wilcox.test(SER_REGBIO$LIC, SER_REGBIO$NP, paired = T)$p.value
-  SER_REGBIO_COMPARATION$wilcox.test.W <- wilcox.test(SER_REGBIO$LIC, SER_REGBIO$NP, paired = T)$statistic
+  SER_REGBIO_COMPARATION$wilcox.test.pvalue <- wilcox.test(SER_REGBIO$LIC, SER_REGBIO$NP, paired = T, conf.level = 0.99)$p.value
+  SER_REGBIO_COMPARATION$wilcox.test.W <- wilcox.test(SER_REGBIO$LIC, SER_REGBIO$NP, paired = T, conf.level = 0.99)$statistic
   SER_REGBIO_COMPARATION_FINAL <- rbind(SER_REGBIO_COMPARATION_FINAL, SER_REGBIO_COMPARATION)
 }
 
