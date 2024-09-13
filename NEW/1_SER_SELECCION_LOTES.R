@@ -169,9 +169,9 @@ ggplot() +
   geom_hline(yintercept = mean(SER_LIC$SER),color="aquamarine3", linetype="dashed", size = 1)+
   geom_hline(yintercept = mean(SER_NP$SER),color="coral3", linetype="dashed", size = 1)+
   geom_vline(xintercept = 181, col = "black", size = 1)+
-  geom_segment(aes(x = 650, y = -0.7, xend = 740, yend = -0.8), size = 1)+
-  geom_segment(aes(x = 650, y = -0.8, xend = 740, yend = -0.9), color="aquamarine3", linetype="dashed", size = 1)+
-  geom_segment(aes(x = 650, y = -0.9, xend = 740, yend = -1), color="coral3", linetype="dashed", size = 1)+
+  geom_segment(aes(x = 650, y = -0.8, xend = 740, yend = -0.8), size = 1)+
+  geom_segment(aes(x = 650, y = -0.9, xend = 740, yend = -0.9), color="aquamarine3", linetype="dashed", size = 1)+
+  geom_segment(aes(x = 650, y = -1, xend = 740, yend = -1), color="coral3", linetype="dashed", size = 1)+
   geom_text(
     data = data.frame(x = 865, y = -0.8, label = paste0("Average SCI size ")),
     aes(x = x, y = y, label = label),
