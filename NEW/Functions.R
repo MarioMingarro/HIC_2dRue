@@ -18,5 +18,5 @@ for(package in packages.to.use) {
 rm(packages.to.use,package)
 
 # CARGAR DATOS ----
-LIC <- foreign::read.dbf("D:/LIC_2dRUE/DATA/LIC_DATA.dbf")
-NP <- foreign::read.dbf( "D:/LIC_2dRUE/DATA/NO_RN2000_DATA.dbf")
+LIC <- foreign::read.dbf("B:/A_GABRIEL/A_LIC_2dRUE/5_DATA/LIC_DATA.dbf")
+NP <- foreign::read.dbf( "B:/A_GABRIEL/A_LIC_2dRUE/5_DATA/NO_RN2000_DATA.dbf")

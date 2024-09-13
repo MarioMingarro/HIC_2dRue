@@ -161,6 +161,112 @@ for(j in 1:991){
   Varianza_NP <- rbind(Varianza_NP, Varianza2)
 }
 
+
+# Grafico SER - PIXEL ----
+ggplot() +
+  geom_point(data = SER_LIC, aes(x = n, y = SER),alpha= .2, size = 2, col = "aquamarine3")+
+  geom_point(data = SER_NP, aes(x = n, y = SER),alpha= .2, size = 2, col = "coral3")+
+  geom_hline(yintercept = mean(SER_LIC$SER),color="aquamarine3", linetype="dashed", size = 1)+
+  geom_hline(yintercept = mean(SER_NP$SER),color="coral3", linetype="dashed", size = 1)+
+  geom_vline(xintercept = 181, col = "black", size = 1)+
+  geom_segment(aes(x = 650, y = -0.7, xend = 740, yend = -0.8), size = 1)+
+  geom_segment(aes(x = 650, y = -0.8, xend = 740, yend = -0.9), color="aquamarine3", linetype="dashed", size = 1)+
+  geom_segment(aes(x = 650, y = -0.9, xend = 740, yend = -1), color="coral3", linetype="dashed", size = 1)+
+  geom_text(
+    data = data.frame(x = 865, y = -0.8, label = paste0("Average SCI size ")),
+    aes(x = x, y = y, label = label),
+    color = "black",
+    size = 3 ,
+    angle = 0,
+    fontface = "bold"
+  ) +
+  geom_text(
+    data = data.frame(x = 830, y = -0.9, label = "Mean (SCIs)"),
+    aes(x = x, y = y, label = label),
+    color = "black",
+    size = 3 ,
+    angle = 0,
+    fontface = "bold"
+  ) +
+  
+  geom_text(
+    data = data.frame(x = 850, y = -1, label = "Mean (UN2000)"),
+    aes(x = x, y = y, label = label),
+    color = "black",
+    size = 3 ,
+    angle = 0,
+    fontface = "bold"
+  )+
+  labs(x= expression("Number of pixel (~km"^{2}~")"))+
+  theme(
+    panel.background = element_rect(fill = "white",
+                                    colour = "white",
+                                    size = 0.5, linetype = "solid"),
+    panel.grid.major.y = element_line(size = 0.1, linetype = 'dashed',
+    ),
+    panel.grid.major.x = element_line(size = 0.1, linetype = 'solid',
+                                      colour = "gray50"),
+    axis.ticks = element_blank(),
+    axis.text.x = element_text(family = "mono", angle = 45, size = 10, hjust = 1, color = "black"),
+    axis.text.y = element_text(family = "mono", size = 10, color = "black"),
+    axis.title.y  = element_text(family = "mono", angle = 90, size = 12),
+    axis.title.x  = element_text(family = "mono", size = 12)
+  )
+
+# Grafico VARIANZA - SER - PIXEL----
+ggplot() +
+  geom_point(data = Varianza_LIC, aes(x = n, y = var),alpha= .2, size = 2, col = "aquamarine3")+
+  geom_point(data = Varianza_NP, aes(x = n, y = var),alpha= .2, size = 2, col = "coral3")+
+  geom_vline(xintercept = 182, col = "black", size = 1)+
+  geom_segment(aes(x = 650, y = 0.18, xend = 740, yend = 0.18), size = 1)+
+  geom_segment(aes(x = 650, y = 0.17, xend = 740, yend = 0.17), color="aquamarine3", linetype="dashed", size = 1)+
+  geom_segment(aes(x = 650, y = 0.16, xend = 740, yend = 0.16), color="coral3", linetype="dashed", size = 1)+
+  geom_text(
+    data = data.frame(x = 845, y = 0.18, label = paste0("Average SCI size ")),
+    aes(x = x, y = y, label = label),
+    color = "black",
+    size = 3 ,
+    angle = 0,
+    fontface = "bold"
+  ) +
+  geom_text(
+    data = data.frame(x = 820, y = 0.17, label = "Mean (SCIs)"),
+    aes(x = x, y = y, label = label),
+    color = "black",
+    size = 3 ,
+    angle = 0,
+    fontface = "bold"
+  ) +
+  geom_text(
+    data = data.frame(x = 835, y = 0.16, label = "Mean (UN2000)"),
+    aes(x = x, y = y, label = label),
+    color = "black",
+    size = 3 ,
+    angle = 0,
+    fontface = "bold"
+  )+ 
+  labs(
+    y = expression(SER[10]~"variance"),  # SER10 con 10 como subíndice
+    x = expression("Number of pixels (~km"^2~")")  # km^2 correctamente formateado
+  )+
+  theme(
+    panel.background = element_rect(fill = "white",
+                                    colour = "white",
+                                    size = 0.5, linetype = "solid"),
+    panel.grid.major.y = element_line(size = 0.1, linetype = 'dashed',
+    ),
+    panel.grid.major.x = element_line(size = 0.1, linetype = 'solid',
+                                      colour = "gray50"),
+    axis.ticks = element_blank(),
+    axis.text.x = element_text(family = "mono", angle = 45, size = 10, hjust = 1, color = "black"),
+    axis.text.y = element_text(family = "mono", size = 10, color = "black"),
+    axis.title.y  = element_text(family = "mono", angle = 90, size = 12),
+    axis.title.x  = element_text(family = "mono", size = 12)
+  )
+
+
+
+
 # SELECCION LOTES II ----
 
 
@@ -181,79 +287,6 @@ annotation <- data.frame(
   label = "Tamaño promedio LIC"
 )
 
-
-ggplot() +
-  geom_point(data = SER_LIC, aes(x = n, y = SER),alpha= .2, size = 2, col = "aquamarine3")+
-  geom_point(data = SER_NP, aes(x = n, y = SER),alpha= .2, size = 2, col = "coral3")+
-  geom_hline(yintercept = mean(SER_LIC$SER),color="aquamarine3", linetype="dashed", size = 1)+
-  geom_hline(yintercept = mean(SER_NP$SER),color="coral3", linetype="dashed", size = 1)+
-  geom_vline(xintercept = 190, col = "black", size = 1)+
-  geom_segment(aes(x = 600, y = -0.4, xend = 700, yend = -0.4), size = 1)+
-  geom_text(data=data.frame(x = 800,y = -0.4,label = "Tamaño promedio LIC"), 
-            aes( x=x, y=y, label=label),
-            color="black", 
-            size=3 , angle=0, fontface="bold" )+
-  geom_segment(aes(x = 600, y = -0.5, xend = 700, yend = -0.5), color="aquamarine3", linetype="dashed", size = 1)+
-  geom_text(data=data.frame(x = 800,y = -0.5,label = "SER promedio LIC España"), 
-            aes( x=x, y=y, label=label),
-            color="black", 
-            size=3 , angle=0, fontface="bold" )+
-  geom_segment(aes(x = 600, y = -0.6, xend = 700, yend = -0.6), color="coral3", linetype="dashed", size = 1)+
-  geom_text(data=data.frame(x = 800,y = -0.6,label = "SER promedio NP España"), 
-            aes( x=x, y=y, label=label),
-            color="black", 
-            size=3 , angle=0, fontface="bold")+
-  labs(x= "Number of pixel")+
-  theme(
-    panel.background = element_rect(fill = "white",
-                                    colour = "white",
-                                    size = 0.5, linetype = "solid"),
-    panel.grid.major.y = element_line(size = 0.1, linetype = 'dashed',
-                                      colour = alpha("gray60",0.5)),
-    panel.grid.major.x = element_line(size = 0.1, linetype = 'solid',
-                                      colour = "gray60"),
-    axis.ticks = element_blank(),
-    axis.title.x = element_blank(),
-    axis.text.x = element_text(family = "mono", angle = 45, size = 10, hjust = 1),
-    axis.text.y = element_text(family = "mono", size = 10),
-    axis.title = element_text(family = "mono", angle = 90, size = 12)
-  )
-
-
-ggplot() +
-  geom_point(data = Varianza_LIC, aes(x = n, y = var),alpha= .2, size = 2, col = "aquamarine3")+
-  geom_point(data = Varianza_NP, aes(x = n, y = var),alpha= .2, size = 2, col = "coral3")+
-  geom_vline(xintercept = 190, col = "black", size = 1)+
-  geom_segment(aes(x = 600, y = 0.15, xend = 700, yend = 0.15), size = 1)+
-  geom_text(data=data.frame(x = 800,y = 0.15,label = "Tamaño promedio LIC"), 
-            aes( x=x, y=y, label=label),
-            color="black", 
-            size=3 , angle=0, fontface="bold" )+
-  geom_segment(aes(x = 600, y = 0.14, xend = 700, yend = 0.14), color="aquamarine3", linetype="dashed", size = 1)+
-  geom_text(data=data.frame(x = 800,y = 0.14,label = "SER promedio LIC España"), 
-            aes( x=x, y=y, label=label),
-            color="black", 
-            size=3 , angle=0, fontface="bold" )+
-  geom_segment(aes(x = 600, y = 0.13, xend = 700, yend = 0.13), color="coral3", linetype="dashed", size = 1)+
-  geom_text(data=data.frame(x = 800,y = 0.13,label = "SER promedio NP España"), 
-            aes( x=x, y=y, label=label),
-            color="black", 
-            size=3 , angle=0, fontface="bold")+
-  labs(x= "Number of pixel")+
-  theme(
-    panel.background = element_rect(fill = "white",
-                                    colour = "white",
-                                    size = 0.5, linetype = "solid"),
-    panel.grid.major.y = element_line(size = 0.1, linetype = 'dashed',
-                                      colour = alpha("gray60",0.5)),
-    panel.grid.major.x = element_line(size = 0.1, linetype = 'solid',
-                                      colour = "gray60"),
-    axis.ticks = element_blank(),
-    axis.title.x = element_blank(),
-    axis.text.x = element_text(family = "mono", angle = 45, size = 10, hjust = 1),
-    axis.text.y = element_text(family = "mono", size = 10),
-    axis.title = element_text(family = "mono", angle = 90, size = 12)
-  )
 
 
 ggplot(Varianza, aes(x = n, y = var)) +
@@ -287,7 +320,7 @@ ggplot(Varianza, aes(x = n, y = var)) +
   )
 
 
-ggarrange(a, b)
+
 
 n <- ((mean(AREA_CCAA$area_CCAA)*50)/100)/mean(AREA_LIC$area_LIC)
 #m = 20
