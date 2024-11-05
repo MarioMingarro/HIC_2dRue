@@ -164,35 +164,35 @@ SER_LIC_CCAA <- mutate(SER_LIC_CCAA, CCAA_C =
                            SER_LIC_CCAA$CCAA == "Galicia"                     ~ "GA", 
                            SER_LIC_CCAA$CCAA == "Asturias, Principado de"     ~ "AS",
                            SER_LIC_CCAA$CCAA == "Cantabria"                   ~ "CN",
-                           SER_LIC_CCAA$CCAA == "PaÃ­s Vasco"                  ~ "PV",
+                           SER_LIC_CCAA$CCAA == "País Vasco"                  ~ "PV",
                            SER_LIC_CCAA$CCAA == "Comunidad Foral de Navarra"  ~ "NA",
-                           SER_LIC_CCAA$CCAA == "Castilla y LeÃ³n"             ~ "CL",
-                           SER_LIC_CCAA$CCAA == "AragÃ³n"                      ~ "AR",
-                           SER_LIC_CCAA$CCAA == "CataluÃ±a"                    ~ "CT",
+                           SER_LIC_CCAA$CCAA == "Castilla y León"             ~ "CL",
+                           SER_LIC_CCAA$CCAA == "Aragón"                      ~ "AR",
+                           SER_LIC_CCAA$CCAA == "Cataluña"                    ~ "CT",
                            SER_LIC_CCAA$CCAA == "Rioja, La"                   ~ "LR",
                            SER_LIC_CCAA$CCAA == "Castilla - La Mancha"        ~ "CM",
                            SER_LIC_CCAA$CCAA == "Comunidad de Madrid"         ~ "MA",
                            SER_LIC_CCAA$CCAA == "Comunitat Valenciana"        ~ "CV",
                            SER_LIC_CCAA$CCAA == "Extremadura"                 ~ "EX",
-                           SER_LIC_CCAA$CCAA == "AndalucÃ­a"                   ~ "AN",
-                           SER_LIC_CCAA$CCAA == "RegiÃ³n de Murcia"            ~ "MU"))
+                           SER_LIC_CCAA$CCAA == "Andalucía"                   ~ "AN",
+                           SER_LIC_CCAA$CCAA == "Región de Murcia"            ~ "MU"))
 SER_NP_CCAA <- mutate(SER_NP_CCAA, CCAA_C =
                         case_when(
-                          SER_NP_CCAA$CCAA == "Galicia"                     ~ "GA", 
-                          SER_NP_CCAA$CCAA == "Asturias, Principado de"     ~ "AS",
-                          SER_NP_CCAA$CCAA == "Cantabria"                   ~ "CN",
-                          SER_NP_CCAA$CCAA == "PaÃ­s Vasco"                  ~ "PV",
-                          SER_NP_CCAA$CCAA == "Comunidad Foral de Navarra"  ~ "NA",
-                          SER_NP_CCAA$CCAA == "Castilla y LeÃ³n"             ~ "CL",
-                          SER_NP_CCAA$CCAA == "AragÃ³n"                      ~ "AR",
-                          SER_NP_CCAA$CCAA == "CataluÃ±a"                    ~ "CT",
-                          SER_NP_CCAA$CCAA == "Rioja, La"                   ~ "LR",
-                          SER_NP_CCAA$CCAA == "Castilla - La Mancha"        ~ "CM",
-                          SER_NP_CCAA$CCAA == "Comunidad de Madrid"         ~ "MA",
-                          SER_NP_CCAA$CCAA == "Comunitat Valenciana"        ~ "CV",
-                          SER_NP_CCAA$CCAA == "Extremadura"                 ~ "EX",
-                          SER_NP_CCAA$CCAA == "AndalucÃ­a"                   ~ "AN",
-                          SER_NP_CCAA$CCAA == "RegiÃ³n de Murcia"            ~ "MU"))
+                          SER_LIC_CCAA$CCAA == "Galicia"                     ~ "GA", 
+                          SER_LIC_CCAA$CCAA == "Asturias, Principado de"     ~ "AS",
+                          SER_LIC_CCAA$CCAA == "Cantabria"                   ~ "CN",
+                          SER_LIC_CCAA$CCAA == "País Vasco"                  ~ "PV",
+                          SER_LIC_CCAA$CCAA == "Comunidad Foral de Navarra"  ~ "NA",
+                          SER_LIC_CCAA$CCAA == "Castilla y León"             ~ "CL",
+                          SER_LIC_CCAA$CCAA == "Aragón"                      ~ "AR",
+                          SER_LIC_CCAA$CCAA == "Cataluña"                    ~ "CT",
+                          SER_LIC_CCAA$CCAA == "Rioja, La"                   ~ "LR",
+                          SER_LIC_CCAA$CCAA == "Castilla - La Mancha"        ~ "CM",
+                          SER_LIC_CCAA$CCAA == "Comunidad de Madrid"         ~ "MA",
+                          SER_LIC_CCAA$CCAA == "Comunitat Valenciana"        ~ "CV",
+                          SER_LIC_CCAA$CCAA == "Extremadura"                 ~ "EX",
+                          SER_LIC_CCAA$CCAA == "Andalucía"                   ~ "AN",
+                          SER_LIC_CCAA$CCAA == "Región de Murcia"            ~ "MU"))
 
 ## COMPARACION SER CCAA ----
 
@@ -237,6 +237,7 @@ kk2 <- melt(kk2)
 
 # Gráfico resultados
 
+## Figure S10
 ggplot()+
   geom_boxplot(data= kk1, aes(y = value, x = factor(CCAA_C)), 
                fill = "aquamarine3", 

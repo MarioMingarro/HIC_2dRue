@@ -16,17 +16,18 @@ for (i in 1:length(C)) {
   rand_LIC <- filter(NP, NP$CCAA == C[i])
   SER_1 <- data.frame(
     CCAA = "a",
-    ABR = 2,
-    BAS = 2,
-    MDEG = 2,
-    DEG = 2,
-    PBB = 2,
-    PAB = 2,
-    SMAD = 2,
-    MAD = 2,
-    REF = 2,
-    AAR = 2
+    UANO = 2,
+    BSLN = 2,
+    VDEG = 2,
+    DEGR = 2,
+    PLOB = 2,
+    PHIB = 2,
+    SMAT = 2,
+    MATU = 2,
+    REFP = 2,
+    OANO = 2
   )
+  
   
   # Calcular el porcentaje de cada valor en la columna 'gridcode'
   porcentaje_por_valor <- prop.table(table(rand_LIC$gridcode)) * 100
@@ -35,16 +36,16 @@ for (i in 1:length(C)) {
   num_columnas <- length(porcentaje_por_valor)
   
   # Rellenar con ceros las columnas faltantes en SER_1
-  SER_1$ABR  <- ifelse(num_columnas >= 1, porcentaje_por_valor[1], 0)
-  SER_1$BAS  <- ifelse(num_columnas >= 2, porcentaje_por_valor[2], 0)
-  SER_1$MDEG <- ifelse(num_columnas >= 3, porcentaje_por_valor[3], 0)
-  SER_1$DEG  <- ifelse(num_columnas >= 4, porcentaje_por_valor[4], 0)
-  SER_1$PBB  <- ifelse(num_columnas >= 5, porcentaje_por_valor[5], 0)
-  SER_1$PAB  <- ifelse(num_columnas >= 6, porcentaje_por_valor[6], 0)
-  SER_1$SMAD <- ifelse(num_columnas >= 7, porcentaje_por_valor[7], 0)
-  SER_1$MAD  <- ifelse(num_columnas >= 8, porcentaje_por_valor[8], 0)
-  SER_1$REF  <- ifelse(num_columnas >= 9, porcentaje_por_valor[9], 0)
-  SER_1$AAR  <- ifelse(num_columnas >= 10, porcentaje_por_valor[10], 0)
+  SER_1$UANO <- ifelse(num_columnas >= 1, porcentaje_por_valor[1], 0)
+  SER_1$BSLN <- ifelse(num_columnas >= 2, porcentaje_por_valor[2], 0)
+  SER_1$VDEG <- ifelse(num_columnas >= 3, porcentaje_por_valor[3], 0)
+  SER_1$DEGR <- ifelse(num_columnas >= 4, porcentaje_por_valor[4], 0)
+  SER_1$PLOB <- ifelse(num_columnas >= 5, porcentaje_por_valor[5], 0)
+  SER_1$PHIB <- ifelse(num_columnas >= 6, porcentaje_por_valor[6], 0)
+  SER_1$SMAT <- ifelse(num_columnas >= 7, porcentaje_por_valor[7], 0)
+  SER_1$MATU <- ifelse(num_columnas >= 8, porcentaje_por_valor[8], 0)
+  SER_1$REFP <- ifelse(num_columnas >= 9, porcentaje_por_valor[9], 0)
+  SER_1$OANO <- ifelse(num_columnas >= 10, porcentaje_por_valor[10], 0)
   
   SER_1$CCAA<- C[i]
   NP_CCAA <-  rbind(NP_CCAA, SER_1)
@@ -57,16 +58,16 @@ for (i in 1:length(C)) {
   rand_LIC <- filter(LIC, LIC$CCAA == C[i])
   SER_1 <- data.frame(
     CCAA = "a",
-    ABR = 2,
-    BAS = 2,
-    MDEG = 2,
-    DEG = 2,
-    PBB = 2,
-    PAB = 2,
-    SMAD = 2,
-    MAD = 2,
-    REF = 2,
-    AAR = 2
+    UANO = 2,
+    BSLN = 2,
+    VDEG = 2,
+    DEGR = 2,
+    PLOB = 2,
+    PHIB = 2,
+    SMAT = 2,
+    MATU = 2,
+    REFP = 2,
+    OANO = 2
   )
   
   # Calcular el porcentaje de cada valor en la columna 'gridcode'
@@ -76,16 +77,16 @@ for (i in 1:length(C)) {
   num_columnas <- length(porcentaje_por_valor)
   
   # Rellenar con ceros las columnas faltantes en SER_1
-  SER_1$ABR  <- ifelse(num_columnas >= 1, porcentaje_por_valor[1], 0)
-  SER_1$BAS  <- ifelse(num_columnas >= 2, porcentaje_por_valor[2], 0)
-  SER_1$MDEG <- ifelse(num_columnas >= 3, porcentaje_por_valor[3], 0)
-  SER_1$DEG  <- ifelse(num_columnas >= 4, porcentaje_por_valor[4], 0)
-  SER_1$PBB  <- ifelse(num_columnas >= 5, porcentaje_por_valor[5], 0)
-  SER_1$PAB  <- ifelse(num_columnas >= 6, porcentaje_por_valor[6], 0)
-  SER_1$SMAD <- ifelse(num_columnas >= 7, porcentaje_por_valor[7], 0)
-  SER_1$MAD  <- ifelse(num_columnas >= 8, porcentaje_por_valor[8], 0)
-  SER_1$REF  <- ifelse(num_columnas >= 9, porcentaje_por_valor[9], 0)
-  SER_1$AAR  <- ifelse(num_columnas >= 10, porcentaje_por_valor[10], 0)
+  SER_1$UANO <- ifelse(num_columnas >= 1, porcentaje_por_valor[1], 0)
+  SER_1$BSLN <- ifelse(num_columnas >= 2, porcentaje_por_valor[2], 0)
+  SER_1$VDEG <- ifelse(num_columnas >= 3, porcentaje_por_valor[3], 0)
+  SER_1$DEGR <- ifelse(num_columnas >= 4, porcentaje_por_valor[4], 0)
+  SER_1$PLOB <- ifelse(num_columnas >= 5, porcentaje_por_valor[5], 0)
+  SER_1$PHIB <- ifelse(num_columnas >= 6, porcentaje_por_valor[6], 0)
+  SER_1$SMAT <- ifelse(num_columnas >= 7, porcentaje_por_valor[7], 0)
+  SER_1$MATU <- ifelse(num_columnas >= 8, porcentaje_por_valor[8], 0)
+  SER_1$REFP <- ifelse(num_columnas >= 9, porcentaje_por_valor[9], 0)
+  SER_1$OANO <- ifelse(num_columnas >= 10, porcentaje_por_valor[10], 0)
   
   SER_1$CCAA<- C[i]
   LIC_CCAA <-  rbind(LIC_CCAA, SER_1)
@@ -93,38 +94,38 @@ for (i in 1:length(C)) {
 
 LIC_CCAA <- mutate(LIC_CCAA, CCAA_C =
                      case_when(
-                       LIC_CCAA$CCAA == "Galicia"                     ~ "GA", 
-                       LIC_CCAA$CCAA == "Asturias, Principado de"     ~ "AS",
-                       LIC_CCAA$CCAA == "Cantabria"                   ~ "CN",
-                       LIC_CCAA$CCAA == "PaÃ­s Vasco"                  ~ "PV",
-                       LIC_CCAA$CCAA == "Comunidad Foral de Navarra"  ~ "NA",
-                       LIC_CCAA$CCAA == "Castilla y LeÃ³n"             ~ "CL",
-                       LIC_CCAA$CCAA == "AragÃ³n"                      ~ "AR",
-                       LIC_CCAA$CCAA == "CataluÃ±a"                    ~ "CT",
-                       LIC_CCAA$CCAA == "Rioja, La"                   ~ "LR",
-                       LIC_CCAA$CCAA == "Castilla - La Mancha"        ~ "CM",
-                       LIC_CCAA$CCAA == "Comunidad de Madrid"         ~ "MA",
-                       LIC_CCAA$CCAA == "Comunitat Valenciana"        ~ "CV",
-                       LIC_CCAA$CCAA == "Extremadura"                 ~ "EX",
-                       LIC_CCAA$CCAA == "AndalucÃ­a"                   ~ "AN",
-                       LIC_CCAA$CCAA == "RegiÃ³n de Murcia"            ~ "MU"))
+                       NP_CCAA$CCAA == "Galicia"                     ~ "GA", 
+                       NP_CCAA$CCAA == "Asturias, Principado de"     ~ "AS",
+                       NP_CCAA$CCAA == "Cantabria"                   ~ "CN",
+                       NP_CCAA$CCAA == "País Vasco"                  ~ "PV",
+                       NP_CCAA$CCAA == "Comunidad Foral de Navarra"  ~ "NA",
+                       NP_CCAA$CCAA == "Castilla y León"             ~ "CL",
+                       NP_CCAA$CCAA == "Aragón"                      ~ "AR",
+                       NP_CCAA$CCAA == "Cataluña"                    ~ "CT",
+                       NP_CCAA$CCAA == "Rioja, La"                   ~ "LR",
+                       NP_CCAA$CCAA == "Castilla - La Mancha"        ~ "CM",
+                       NP_CCAA$CCAA == "Comunidad de Madrid"         ~ "MA",
+                       NP_CCAA$CCAA == "Comunitat Valenciana"        ~ "CV",
+                       NP_CCAA$CCAA == "Extremadura"                 ~ "EX",
+                       NP_CCAA$CCAA == "Andalucía"                   ~ "AN",
+                       NP_CCAA$CCAA == "Región de Murcia"            ~ "MU"))
 NP_CCAA <- mutate(NP_CCAA, CCAA_C =
                     case_when(
                       NP_CCAA$CCAA == "Galicia"                     ~ "GA", 
                       NP_CCAA$CCAA == "Asturias, Principado de"     ~ "AS",
                       NP_CCAA$CCAA == "Cantabria"                   ~ "CN",
-                      NP_CCAA$CCAA == "PaÃ­s Vasco"                  ~ "PV",
+                      NP_CCAA$CCAA == "País Vasco"                  ~ "PV",
                       NP_CCAA$CCAA == "Comunidad Foral de Navarra"  ~ "NA",
-                      NP_CCAA$CCAA == "Castilla y LeÃ³n"             ~ "CL",
-                      NP_CCAA$CCAA == "AragÃ³n"                      ~ "AR",
-                      NP_CCAA$CCAA == "CataluÃ±a"                    ~ "CT",
+                      NP_CCAA$CCAA == "Castilla y León"             ~ "CL",
+                      NP_CCAA$CCAA == "Aragón"                      ~ "AR",
+                      NP_CCAA$CCAA == "Cataluña"                    ~ "CT",
                       NP_CCAA$CCAA == "Rioja, La"                   ~ "LR",
                       NP_CCAA$CCAA == "Castilla - La Mancha"        ~ "CM",
                       NP_CCAA$CCAA == "Comunidad de Madrid"         ~ "MA",
                       NP_CCAA$CCAA == "Comunitat Valenciana"        ~ "CV",
                       NP_CCAA$CCAA == "Extremadura"                 ~ "EX",
-                      NP_CCAA$CCAA == "AndalucÃ­a"                   ~ "AN",
-                      NP_CCAA$CCAA == "RegiÃ³n de Murcia"            ~ "MU"))
+                      NP_CCAA$CCAA == "Andalucía"                   ~ "AN",
+                      NP_CCAA$CCAA == "Región de Murcia"            ~ "MU"))
 
 
 # Density plot 2dRUE class --------
