@@ -173,7 +173,7 @@ ggplot() +
   geom_segment(aes(x = 650, y = -0.9, xend = 740, yend = -0.9), color="aquamarine3", linetype="dashed", size = 1)+
   geom_segment(aes(x = 650, y = -1, xend = 740, yend = -1), color="coral3", linetype="dashed", size = 1)+
   geom_text(
-    data = data.frame(x = 865, y = -0.8, label = paste0("Average SCI size ")),
+    data = data.frame(x = 865, y = -0.8, label = paste0("Average SACs size ")),
     aes(x = x, y = y, label = label),
     color = "black",
     size = 3 ,
@@ -181,7 +181,7 @@ ggplot() +
     fontface = "bold"
   ) +
   geom_text(
-    data = data.frame(x = 830, y = -0.9, label = "Mean (SCIs)"),
+    data = data.frame(x = 830, y = -0.9, label = "Mean (SACs)"),
     aes(x = x, y = y, label = label),
     color = "black",
     size = 3 ,
@@ -197,7 +197,7 @@ ggplot() +
     angle = 0,
     fontface = "bold"
   )+
-  labs(x= expression("Number of pixel (~km"^{2}~")"))+
+  labs(x= expression("Number of cells (~km"^{2}~")"))+
   theme(
     panel.background = element_rect(fill = "white",
                                     colour = "white",
