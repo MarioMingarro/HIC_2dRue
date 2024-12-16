@@ -169,34 +169,6 @@ ggplot() +
   geom_hline(yintercept = mean(SER_LIC$SER),color="aquamarine3", linetype="dashed", size = 1)+
   geom_hline(yintercept = mean(SER_NP$SER),color="coral3", linetype="dashed", size = 1)+
   geom_vline(xintercept = 181, col = "black", size = 1)+
-  geom_segment(aes(x = 650, y = -0.8, xend = 740, yend = -0.8), size = 1)+
-  geom_segment(aes(x = 650, y = -0.9, xend = 740, yend = -0.9), color="aquamarine3", linetype="dashed", size = 1)+
-  geom_segment(aes(x = 650, y = -1, xend = 740, yend = -1), color="coral3", linetype="dashed", size = 1)+
-  geom_text(
-    data = data.frame(x = 865, y = -0.8, label = paste0("Average SACs size ")),
-    aes(x = x, y = y, label = label),
-    color = "black",
-    size = 3 ,
-    angle = 0,
-    fontface = "bold"
-  ) +
-  geom_text(
-    data = data.frame(x = 830, y = -0.9, label = "Mean (SACs)"),
-    aes(x = x, y = y, label = label),
-    color = "black",
-    size = 3 ,
-    angle = 0,
-    fontface = "bold"
-  ) +
-  
-  geom_text(
-    data = data.frame(x = 850, y = -1, label = "Mean (UN2000)"),
-    aes(x = x, y = y, label = label),
-    color = "black",
-    size = 3 ,
-    angle = 0,
-    fontface = "bold"
-  )+
   labs(x= expression("Number of cells (~km"^{2}~")"))+
   theme(
     panel.background = element_rect(fill = "white",
@@ -218,36 +190,9 @@ ggplot() +
   geom_point(data = Varianza_LIC, aes(x = n, y = var),alpha= .2, size = 2, col = "aquamarine3")+
   geom_point(data = Varianza_NP, aes(x = n, y = var),alpha= .2, size = 2, col = "coral3")+
   geom_vline(xintercept = 182, col = "black", size = 1)+
-  geom_segment(aes(x = 650, y = 0.18, xend = 740, yend = 0.18), size = 1)+
-  geom_segment(aes(x = 650, y = 0.17, xend = 740, yend = 0.17), color="aquamarine3", linetype="dashed", size = 1)+
-  geom_segment(aes(x = 650, y = 0.16, xend = 740, yend = 0.16), color="coral3", linetype="dashed", size = 1)+
-  geom_text(
-    data = data.frame(x = 845, y = 0.18, label = paste0("Average SCI size ")),
-    aes(x = x, y = y, label = label),
-    color = "black",
-    size = 3 ,
-    angle = 0,
-    fontface = "bold"
-  ) +
-  geom_text(
-    data = data.frame(x = 820, y = 0.17, label = "Mean (SCIs)"),
-    aes(x = x, y = y, label = label),
-    color = "black",
-    size = 3 ,
-    angle = 0,
-    fontface = "bold"
-  ) +
-  geom_text(
-    data = data.frame(x = 835, y = 0.16, label = "Mean (UN2000)"),
-    aes(x = x, y = y, label = label),
-    color = "black",
-    size = 3 ,
-    angle = 0,
-    fontface = "bold"
-  )+ 
   labs(
     y = expression(SER[10]~"variance"),  # SER10 con 10 como subíndice
-    x = expression("Number of pixels (~km"^2~")")  # km^2 correctamente formateado
+    x = expression("Number of cells (~km"^2~")")  # km^2 correctamente formateado
   )+
   theme(
     panel.background = element_rect(fill = "white",
