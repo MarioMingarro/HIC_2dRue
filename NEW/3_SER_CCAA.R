@@ -194,6 +194,68 @@ SER_NP_CCAA <- mutate(SER_NP_CCAA, CCAA_C =
                           SER_LIC_CCAA$CCAA == "Andalucía"                   ~ "AN",
                           SER_LIC_CCAA$CCAA == "Región de Murcia"            ~ "MU"))
 
+## SER ACTUALIZADO (2025) ----
+# Crear un nuevo dataframe donde se almacenarán los resultados
+C <- unique(NP$CCAA)
+
+SER_NP_CCAA <- data.frame(
+  CCAA = character(),
+  SER = numeric(),
+  ABR = numeric(),
+  BAS = numeric(),
+  MDEG = numeric(),
+  DEG = numeric(),
+  PBB = numeric(),
+  PAB = numeric(),
+  SMAD = numeric(),
+  MAD = numeric(),
+  REF = numeric(),
+  AAR = numeric()
+)
+
+# Nombres de columnas de SER asociadas a los códigos de gridcode
+columnas_SER <- c("ABR", "BAS", "MDEG", "DEG", "PBB", "PAB", "SMAD", "MAD", "REF", "AAR")
+names(columnas_SER) <- 1:10 # Suponiendo gridcodes del 1 al 10
+
+for (i in 1:length(C)) {
+  filtrados <- dplyr::filter(NP, NP$CCAA == C[i])
+  for (j in 1:1000) {
+    rand_NP <- filtrados[sample(nrow(filtrados), size = 190), ]
+    
+    # Calcular el porcentaje de cada valor en la columna 'gridcode'
+    porcentaje_por_valor <- prop.table(table(rand_NP$gridcode)) * 100
+    
+    # Crear un dataframe SER inicializado en 0
+    SER <- as.data.frame(matrix(0, nrow = 1, ncol = length(columnas_SER)))
+    colnames(SER) <- columnas_SER
+    
+    # Asignar valores según gridcode
+    for (gc in names(porcentaje_por_valor)) {
+      if (gc %in% names(columnas_SER)) {
+        columna <- columnas_SER[[gc]]
+        SER[[columna]] <- porcentaje_por_valor[[gc]]
+      }
+    }
+    
+    # Calcular SR_b y SR_a asegurando que los valores fuera de rango sean 0
+    SR_b <- sum(SER[, c("PAB", "SMAD", "MAD", "REF", "AAR")], na.rm = TRUE)
+    SR_a <- sum(SER[, c("MDEG", "DEG", "PBB")], na.rm = TRUE)
+    
+    # Crear dataframe de resultados
+    SER_NP_2 <- data.frame(
+      CCAA = C[i],
+      SER = ifelse((SR_b + SR_a) == 0, 0, (SR_b - SR_a) / (SR_b + SR_a)))
+    
+    # Unir SER con SER_NP_2
+    SER_NP_2 <- cbind(SER_NP_2, SER)
+    
+    # Agregar a SER_NP_CCAA
+    SER_NP_CCAA <- rbind(SER_NP_CCAA, SER_NP_2)
+  }
+}
+
+SER_NP_CCAA %>% group_by(CCAA) %>% summarise(median(SER))
+
 ## COMPARACION SER CCAA ----
 
 
